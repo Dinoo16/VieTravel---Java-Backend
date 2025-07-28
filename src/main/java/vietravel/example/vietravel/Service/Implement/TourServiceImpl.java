@@ -60,25 +60,23 @@ public class TourServiceImpl implements TourService {
         return dto;
     }
 
-
-    @Override
-    public TourDto createTour(TourDto tourDto) {
+    public Tour toEntity(TourDto dto) {
         // Fetch Destination
-        Destination destination = destinationRepository.findByName(tourDto.getDestinationName())
+        Destination destination = destinationRepository.findByName(dto.getDestinationName())
                 .orElseThrow(() -> new RuntimeException("Destination not found"));
 
         // Fetch Categories
-        List<Category> categories = categoryRepository.findByNameIn(tourDto.getCategoryNames());
-        if (categories.size() != tourDto.getCategoryNames().size()) {
+        List<Category> categories = categoryRepository.findByNameIn(dto.getCategoryNames());
+        if (categories.size() != dto.getCategoryNames().size()) {
             throw new RuntimeException("One or more categories not found");
         }
 
         // Fetch Guide
-        Guide guide = guideRepository.findByName(tourDto.getGuideName())
+        Guide guide = guideRepository.findByName(dto.getGuideName())
                 .orElseThrow(() -> new RuntimeException("Guide not found"));
 
         // Convert TourPlans
-        List<TourPlan> tourPlans = tourDto.getTourPlans().stream()
+        List<TourPlan> tourPlans = dto.getTourPlans().stream()
                 .map(planDto -> TourPlan.builder()
                         .day(planDto.getDay())
                         .title(planDto.getTitle())
@@ -86,33 +84,37 @@ public class TourServiceImpl implements TourService {
                         .build())
                 .collect(Collectors.toList());
 
-        // Create Tour
+        // Build Tour
         Tour tour = Tour.builder()
-                .title(tourDto.getTitle())
-                .departure(tourDto.getDeparture())
-                .departureTime(tourDto.getDepartureTime())
-                .returnTime(tourDto.getReturnTime())
-                .duration(Integer.parseInt(tourDto.getDuration().replaceAll("\\D", "")))
-                .price(tourDto.getPrice())
-                .description(tourDto.getDescription())
-                .backgroundImage(tourDto.getBackgroundImage())
-                .gallery(tourDto.getGallery())
-                .availableDates(tourDto.getAvailableDates())
+                .title(dto.getTitle())
+                .departure(dto.getDeparture())
+                .departureTime(dto.getDepartureTime())
+                .returnTime(dto.getReturnTime())
+                .duration(Integer.parseInt(dto.getDuration().replaceAll("\\D", "")))
+                .price(dto.getPrice())
+                .description(dto.getDescription())
+                .backgroundImage(dto.getBackgroundImage())
+                .gallery(dto.getGallery())
+                .availableDates(dto.getAvailableDates())
                 .destination(destination)
                 .categories(categories)
                 .guide(guide)
-                .tourPlans(new ArrayList<>()) // Empty for now
+                .tourPlans(new ArrayList<>()) // Temporary
                 .build();
 
-        // Link back each TourPlan to Tour
+        // Link each TourPlan back to Tour
         tourPlans.forEach(plan -> plan.setTour(tour));
         tour.setTourPlans(tourPlans);
 
-        // Save
-        Tour savedTour = tourRepository.save(tour);
+        return tour;
 
-        // Return mapped DTO
-        return toDto(savedTour);
+    }
+
+
+    @Override
+    public TourDto createTour(TourDto tourDto) {
+        Tour tour = toEntity(tourDto);
+        return toDto(tourRepository.save(tour));
 
     }
 
