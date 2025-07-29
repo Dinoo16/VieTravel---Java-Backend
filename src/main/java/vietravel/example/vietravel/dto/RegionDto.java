@@ -8,9 +8,10 @@ import java.util.List;
 
 @Data
 public class RegionDto {
-    private Long id;
+    private Long regionId;
 
     @NotBlank(message = "Name is required")
+
     private String name;
 
     @NotBlank(message = "Description is required")
