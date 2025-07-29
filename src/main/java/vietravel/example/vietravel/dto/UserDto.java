@@ -6,7 +6,6 @@ import lombok.Data;
 public class UserDto {
     private Long id;
 
-    @NotBlank(message = "Name is required")
     private String name;
 
     @Email(message = "Email is not valid")

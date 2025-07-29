@@ -9,6 +9,7 @@ import vietravel.example.vietravel.Service.UserService;
 import vietravel.example.vietravel.dto.UserDto;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,21 +44,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto dto) {
-        User user = toEntity(dto);
-        return toDto(userRepository.save(user));
+        User user = new User();
+        user.setEmail(dto.getEmail());
+        user.setPassword(dto.getPassword()); // encode password
+        user.setRole(UserRole.CUSTOMER); // default role
+        User saved = userRepository.save(user);
+        return toDto(saved);
     }
 
     @Override
-    public UserDto updateUser(Long id, UserDto dto) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        user.setName(dto.getName());
-        user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
-        user.setRole(UserRole.valueOf(dto.getRole().toUpperCase()));
-        user.setPhone(dto.getPhone());
-        user.setAvatar(dto.getAvatar());
-        return toDto(userRepository.save(user));
+    public UserDto updateUserProfile(Long id, UserDto userDto) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isEmpty()) {
+            throw new RuntimeException("User not found");
+        }
+        User user = optionalUser.get();
+        // Update fields based on profile data
+        user.setName(userDto.getName());
+        user.setPhone(userDto.getPhone());
+        user.setAvatar(userDto.getAvatar());
+        User updatedUser = userRepository.save(user);
+        return toDto(updatedUser);
     }
 
     @Override
