@@ -1,30 +1,22 @@
-package vietravel.example.vietravel.Controller;
+package vietravel.example.vietravel.Controller.UserController;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vietravel.example.vietravel.Service.UserService;
 import vietravel.example.vietravel.dto.UserDto;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('USER') or hasRole('GUIDE')")
 public class UserController {
 
     private final UserService userService;
 
-    // Create user
-    @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
-        // Email and password are mandatory
-        UserDto user = userService.createUser(userDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
-    }
-
-    // Update user's profile (name, phone, avatar, bookings)
+    // Update user's profile (name, phone, avatar)
     @PutMapping("/{id}/profile")
     public ResponseEntity<UserDto> updateUserProfile(@PathVariable Long id, @RequestBody UserDto userDto) {
         UserDto user = userService.updateUserProfile(id, userDto);
@@ -37,20 +29,4 @@ public class UserController {
         UserDto user = userService.getUserById(id);
         return ResponseEntity.ok(user);
     }
-
-
-    // (Optional) Delete user
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    // Get all users (Admin)
-    @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers() {
-        List<UserDto> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
-    }
-
 }
