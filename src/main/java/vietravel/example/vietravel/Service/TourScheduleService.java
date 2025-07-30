@@ -2,17 +2,11 @@ package vietravel.example.vietravel.Service;
 
 import vietravel.example.vietravel.dto.TourScheduleDto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TourScheduleService {
 
-    TourScheduleDto createSchedule(TourScheduleDto dto);
-
+    TourScheduleDto createDynamicSchedule(Long tourId, LocalDateTime departureDate, LocalDateTime returnDate, List<Long> guideIds);
     TourScheduleDto getScheduleById(Long id);
-
-    List<TourScheduleDto> getAllSchedules();
-
-    TourScheduleDto updateSchedule(Long id, TourScheduleDto dto);
-
-    void deleteSchedule(Long id);
 }

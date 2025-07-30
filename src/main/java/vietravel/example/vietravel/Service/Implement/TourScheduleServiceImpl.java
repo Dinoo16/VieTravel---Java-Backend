@@ -11,6 +11,7 @@ import vietravel.example.vietravel.Repository.TourScheduleRepository;
 import vietravel.example.vietravel.Service.TourScheduleService;
 import vietravel.example.vietravel.dto.TourScheduleDto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,64 +24,27 @@ public class TourScheduleServiceImpl implements TourScheduleService {
     private final GuideRepository guideRepository;
 
     @Override
-    public TourScheduleDto createSchedule(TourScheduleDto dto) {
-        TourSchedule schedule = toEntity(dto);
+    public TourScheduleDto createDynamicSchedule(Long tourId, LocalDateTime departureDate, LocalDateTime returnDate, List<Long> guideIds) {
+        Tour tour = tourRepository.findById(tourId)
+                .orElseThrow(() -> new RuntimeException("Tour not found"));
+
+        List<Guide> guides = guideRepository.findAllById(guideIds);
+
+        TourSchedule schedule = TourSchedule.builder()
+                .tour(tour)
+                .departureDate(departureDate)
+                .returnTime(returnDate)
+                .guides(guides)
+                .build();
+
         return toDto(scheduleRepository.save(schedule));
     }
 
     @Override
     public TourScheduleDto getScheduleById(Long id) {
-        TourSchedule schedule = scheduleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Schedule not found"));
-        return toDto(schedule);
-    }
-
-    @Override
-    public List<TourScheduleDto> getAllSchedules() {
-        return scheduleRepository.findAll()
-                .stream()
+        return scheduleRepository.findById(id)
                 .map(this::toDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public TourScheduleDto updateSchedule(Long id, TourScheduleDto dto) {
-        TourSchedule existing = scheduleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Schedule not found"));
-
-        Tour tour = tourRepository.findById(dto.getTourId())
-                .orElseThrow(() -> new RuntimeException("Tour not found"));
-
-        List<Guide> guides = guideRepository.findAllById(dto.getGuideIds());
-
-        existing.setTour(tour);
-        existing.setDepartureDate(dto.getDepartureTime());
-        existing.setReturnTime(dto.getReturnTime());
-        existing.setGuides(guides);
-
-        return toDto(scheduleRepository.save(existing));
-    }
-
-    @Override
-    public void deleteSchedule(Long id) {
-        if (!scheduleRepository.existsById(id)) {
-            throw new RuntimeException("Schedule not found");
-        }
-        scheduleRepository.deleteById(id);
-    }
-
-    private TourSchedule toEntity(TourScheduleDto dto) {
-        Tour tour = tourRepository.findById(dto.getTourId())
-                .orElseThrow(() -> new RuntimeException("Tour not found"));
-
-        List<Guide> guides = guideRepository.findAllById(dto.getGuideIds());
-
-        return TourSchedule.builder()
-                .tour(tour)
-                .departureDate(dto.getDepartureTime())
-                .returnTime(dto.getReturnTime())
-                .guides(guides)
-                .build();
     }
 
     private TourScheduleDto toDto(TourSchedule schedule) {
@@ -91,9 +55,10 @@ public class TourScheduleServiceImpl implements TourScheduleService {
         dto.setReturnTime(schedule.getReturnTime());
         dto.setGuideIds(
                 schedule.getGuides().stream()
-                        .map(guide -> guide.getId())
+                        .map(Guide::getId)
                         .collect(Collectors.toList())
         );
         return dto;
     }
 }
+

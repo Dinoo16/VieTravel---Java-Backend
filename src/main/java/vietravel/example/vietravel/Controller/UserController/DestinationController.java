@@ -34,27 +34,5 @@ public class DestinationController {
         return ResponseEntity.ok(destination);
     }
 
-    // Create destination
-    @PostMapping
-    public ResponseEntity<DestinationDto> createDestination(@RequestBody DestinationDto destinationDto) {
-        DestinationDto destinations = destinationService.createDestination(destinationDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(destinations);
-
-    }
-
-    // Update destination
-    @PutMapping("/{id}")
-    public ResponseEntity<DestinationDto> updateDestination(@PathVariable Long id, @RequestBody DestinationDto destinationDto) {
-        DestinationDto destination = destinationService.updateDestination(id, destinationDto);
-        return ResponseEntity.ok(destination);
-    }
-
-    // Delete destination
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDestination(@PathVariable Long id) {
-        destinationService.deleteDestination(id);
-        return ResponseEntity.noContent().build();
-    }
-
 
 }

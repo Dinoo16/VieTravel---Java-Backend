@@ -1,4 +1,4 @@
-package vietravel.example.vietravel.Controller.UserController;
+package vietravel.example.vietravel.Controller.AdminController;
 
 
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/admin/bookings")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('USER') or hasRole('GUIDE')")
-public class BookingController {
-
+@PreAuthorize("hasRole('ADMIN')")
+public class AdminBookingController {
 }

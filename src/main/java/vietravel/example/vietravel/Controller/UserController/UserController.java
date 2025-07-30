@@ -16,6 +16,14 @@ public class UserController {
 
     private final UserService userService;
 
+    // Create user
+    @PostMapping
+    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
+        UserDto user = userService.createUser(userDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
+
+
     // Update user's profile (name, phone, avatar)
     @PutMapping("/{id}/profile")
     public ResponseEntity<UserDto> updateUserProfile(@PathVariable Long id, @RequestBody UserDto userDto) {

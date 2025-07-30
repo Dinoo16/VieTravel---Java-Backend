@@ -1,8 +1,36 @@
 package vietravel.example.vietravel.Controller.UserController;
 
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import vietravel.example.vietravel.Service.TourScheduleService;
+import vietravel.example.vietravel.dto.TourScheduleDto;
 
-@PreAuthorize("hasRole('USER') or hasRole('GUIDE')")
+@RestController
+@RequestMapping("/api/tour-schedules")
+@RequiredArgsConstructor
+
 public class TourScheduleController {
+
+    private final TourScheduleService tourScheduleService;
+
+    @PostMapping("/create")
+    public ResponseEntity<TourScheduleDto> createDynamicSchedule(@RequestBody TourScheduleDto dto) {
+        TourScheduleDto result = tourScheduleService.createDynamicSchedule(
+                dto.getTourId(),
+                dto.getDepartureTime(),
+                dto.getReturnTime(),
+                dto.getGuideIds()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TourScheduleDto> getSchedule(@PathVariable Long id) {
+        return ResponseEntity.ok(tourScheduleService.getScheduleById(id));
+    }
 }
+

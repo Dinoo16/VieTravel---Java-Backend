@@ -25,27 +25,4 @@ public class TourPlanController {
         return ResponseEntity.ok(tourPlans);
     }
 
-    // Create a tour plan
-    @PostMapping
-    public ResponseEntity<TourPlanDto> createTourPlan(@RequestBody TourPlanDto dto) {
-        TourPlanDto created = tourPlanService.createTourPlan(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
-    }
-
-    // Update a tour plan
-    @PutMapping("/{id}")
-    public ResponseEntity<TourPlanDto> updateTourPlan(
-            @PathVariable Long id,
-            @RequestBody TourPlanDto dto
-    ) {
-        TourPlanDto updated = tourPlanService.updateTourPlan(id, dto);
-        return ResponseEntity.ok(updated);
-    }
-
-    // Delete a tour plan
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTourPlan(@PathVariable Long id) {
-        tourPlanService.deleteTourPlan(id);
-        return ResponseEntity.noContent().build();
-    }
 }

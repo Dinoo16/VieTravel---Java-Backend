@@ -18,28 +18,6 @@ public class TourController {
 
     private final TourService tourService;
 
-    // Create tour
-    @PostMapping
-    public ResponseEntity<TourDto> createTour(@RequestBody TourDto tourDto) {
-        TourDto createdTour = tourService.createTour(tourDto);
-        return ResponseEntity.ok(createdTour);
-    }
-
-    // Update
-    @PutMapping("/{id}")
-    public ResponseEntity<TourDto> updateTour(@PathVariable Long id, @RequestBody TourDto tourDto) {
-        TourDto updateTour = tourService.updateTour(id, tourDto);
-        return ResponseEntity.ok(updateTour);
-    }
-
-
-    // Delete
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTour(@PathVariable Long id) {
-        tourService.deleteTour(id);
-        return ResponseEntity.noContent().build();
-    }
-
     // Get all tours
     @GetMapping
     public ResponseEntity<List<TourDto>> getAllTours() {
