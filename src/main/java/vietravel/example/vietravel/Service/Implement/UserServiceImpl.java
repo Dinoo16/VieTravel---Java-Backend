@@ -42,6 +42,8 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    // Create normal user
+
     @Override
     public UserDto createUser(UserDto dto) {
         User user = new User();
@@ -51,6 +53,20 @@ public class UserServiceImpl implements UserService {
         User saved = userRepository.save(user);
         return toDto(saved);
     }
+
+    // Admin create guide
+    public UserDto createGuideAccount(UserDto dto) {
+//        if (userRepository.existsByEmail(email)) {
+//            throw new RuntimeException("Email already in use");
+//        }
+        User user = new User();
+        user.setEmail(dto.getEmail());
+        user.setPassword(dto.getPassword());
+        user.setRole(UserRole.GUIDE);
+        User saved = userRepository.save(user);
+        return toDto(saved);
+    }
+
 
     @Override
     public UserDto updateUserProfile(Long id, UserDto userDto) {

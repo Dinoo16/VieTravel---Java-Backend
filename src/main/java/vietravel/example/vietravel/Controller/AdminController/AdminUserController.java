@@ -25,6 +25,14 @@ public class AdminUserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
+    // Admin create guide account
+
+    @PostMapping("/create-guide-account")
+    public ResponseEntity<UserDto> createGuideAccount(@RequestBody UserDto dto) {
+        UserDto user = userService.createGuideAccount(dto);
+        return ResponseEntity.ok(user);
+    }
+
     // Delete user
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
