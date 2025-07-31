@@ -17,5 +17,5 @@ public class RegionDto {
     @NotBlank(message = "Description is required")
     private String description;
 
-    private List<Destination> destinations;
+    private List<DestinationDto> destinations;
 }

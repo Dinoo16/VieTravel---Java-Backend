@@ -39,7 +39,7 @@ public class Tour {
 
     // Guide (many tours -> one guide)
     @ManyToOne
-    @JoinColumn(name = "guide_id")
+    @JoinColumn(name = "guide_id", nullable = true)
     private Guide guide;
 
     // Duration and price

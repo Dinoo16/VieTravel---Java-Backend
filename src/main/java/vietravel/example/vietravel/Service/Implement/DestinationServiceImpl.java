@@ -3,6 +3,7 @@ package vietravel.example.vietravel.Service.Implement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vietravel.example.vietravel.Model.Destination;
+import vietravel.example.vietravel.Model.Region;
 import vietravel.example.vietravel.Repository.DestinationRepository;
 import vietravel.example.vietravel.Service.DestinationService;
 import vietravel.example.vietravel.dto.DestinationDto;
@@ -19,13 +20,13 @@ public class DestinationServiceImpl implements DestinationService {
 
 
     private DestinationDto toDto(Destination destination) {
-        DestinationDto dto = new DestinationDto();
-        dto.setId(destination.getDestinationId());
-        dto.setName(destination.getName());
-        dto.setDescription(destination.getDescription());
-        dto.setBackgroundImage(destination.getBackgroundImage());
-        dto.setRegion(destination.getRegion());
-        return dto;
+        return DestinationDto.builder()
+                .id(destination.getDestinationId())
+                .name(destination.getName())
+                .description(destination.getDescription())
+                .backgroundImage(destination.getBackgroundImage())
+                .regionId(destination.getRegion().getRegionId())
+                .build();
     }
 
 
@@ -34,7 +35,7 @@ public class DestinationServiceImpl implements DestinationService {
         Destination destination = Destination.builder()
                 .name(destinationDto.getName())
                 .description(destinationDto.getDescription())
-                .region(destinationDto.getRegion())
+                .region(Region.builder().regionId(destinationDto.getRegionId()).build())
                 .backgroundImage(destinationDto.getBackgroundImage()).build();
         return toDto(destinationRepository.save(destination));
 
@@ -46,7 +47,7 @@ public class DestinationServiceImpl implements DestinationService {
                 .orElseThrow(() -> new RuntimeException("Destination not found"));
         destination.setName(destinationDto.getName());
         destination.setDescription(destinationDto.getDescription());
-        destination.setRegion(destinationDto.getRegion());
+        destination.setRegion(Region.builder().regionId(destinationDto.getRegionId()).build());
         destination.setBackgroundImage(destinationDto.getBackgroundImage());
 
         return toDto(destinationRepository.save(destination));

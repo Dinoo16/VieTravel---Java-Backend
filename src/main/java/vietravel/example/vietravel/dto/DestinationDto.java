@@ -1,12 +1,19 @@
 package vietravel.example.vietravel.dto;
 
 import jakarta.validation.constraints.*;
+import jdk.jshell.Snippet;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import vietravel.example.vietravel.Model.Region;
 
 import java.util.List;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DestinationDto {
     private Long id;
 
@@ -18,9 +25,10 @@ public class DestinationDto {
     private String description;
 
     @NotNull(message = "Region ID is required")
-    private Region region;
+    private Long regionId;
 
     private List<Long> tourIds;
 
     private String backgroundImage;
+
 }

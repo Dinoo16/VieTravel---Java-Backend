@@ -26,6 +26,7 @@ public class TourDto {
     @NotBlank(message = "Category is required")
     List<String> categoryNames;
 
+
     private String guideName;
 
     @NotBlank(message = "Duration is required")

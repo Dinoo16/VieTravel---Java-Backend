@@ -1,6 +1,7 @@
 package vietravel.example.vietravel.Model;
 import jakarta.persistence.*;
 import lombok.*;
+import vietravel.example.vietravel.dto.DestinationDto;
 
 import java.util.List;
 
