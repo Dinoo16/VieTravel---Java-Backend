@@ -10,6 +10,6 @@ import java.util.List;
 public interface TourPlanRepository extends JpaRepository<TourPlan, Long> {
 
     // Find by tour id
-    List<TourPlan> findByTourId(Long tourId);
+    List<TourPlan> findByTourTourId(Long tourId);
 
 }

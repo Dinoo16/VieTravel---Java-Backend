@@ -9,9 +9,5 @@ import java.util.List;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    // Find review by tour id
-    List<Review> findByTourId(Long tourId);
 
-    // Check if exist any reviews by user id and tour id
-    boolean existsByUserIdAndTourId(Long userId, Long tourId);
 }

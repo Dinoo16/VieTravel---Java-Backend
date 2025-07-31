@@ -7,7 +7,6 @@ import java.util.*;
 
 public interface TourScheduleRepository extends JpaRepository<TourSchedule, Long> {
 
-    Optional<TourSchedule> findById(Long id);
+    Optional<TourSchedule> findByTourTourId(Long id);
 
-    List<TourSchedule> findByTour_TourId(Long tourId);
 }

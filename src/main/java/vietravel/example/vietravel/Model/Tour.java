@@ -70,8 +70,6 @@ public class Tour {
     private List<LocalDateTime> availableDates;
 
     // Relationships
-    @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
-    private List<Booking> bookings;
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
     private List<Review> reviews;

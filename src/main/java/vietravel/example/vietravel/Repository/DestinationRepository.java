@@ -12,5 +12,4 @@ public interface DestinationRepository extends JpaRepository<Destination, Long> 
     // Find by name
     Optional<Destination> findByName(String destinationName);
 
-
 }

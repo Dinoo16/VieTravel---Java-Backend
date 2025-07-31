@@ -10,10 +10,7 @@ import java.util.Optional;
 @Repository
 public interface TourRepository extends JpaRepository<Tour, Long> {
 
-    // Find tours by id
-    Optional<Tour> findById(Long id);
-
     // Find tours by name containing a keyword (for search)
-    List<Tour> findByNameContainingIgnoreCase(String keyword);
+//    List<Tour> findByNameContainingIgnoreCase(String keyword);
 
 }

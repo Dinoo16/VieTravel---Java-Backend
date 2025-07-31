@@ -53,36 +53,59 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto createBooking(BookingDto bookingDto) {
-        Booking booking = toEntity(bookingDto);
+        TourSchedule originalSchedule = tourScheduleRepository.findById(bookingDto.getTourScheduleId())
+                .orElseThrow(() -> new RuntimeException("Tour schedule not found"));
+
+        // Tạo bản sao mới của TourSchedule từ originalSchedule
+        TourSchedule newSchedule = TourSchedule.builder()
+                .tour(originalSchedule.getTour())
+                .departureDate(bookingDto.getDate().atStartOfDay()) // Gán ngày đi theo ngày đặt
+                .returnTime(originalSchedule.getReturnTime()) // Có thể tính toán lại tùy theo số ngày
+                .guides(originalSchedule.getGuides())
+                .build();
+        tourScheduleRepository.save(newSchedule);
+
+        // Gán schedule mới cho booking
+        Booking booking = Booking.builder()
+                .user(userRepository.findById(bookingDto.getUserId())
+                        .orElseThrow(() -> new RuntimeException("User not found")))
+                .tourSchedule(newSchedule)
+                .date(bookingDto.getDate())
+                .status(bookingDto.getStatus())
+                .numberOfPeople(bookingDto.getNumberOfPeople())
+                .totalAmount(bookingDto.getTotalAmount())
+                .build();
+
         Booking saved = bookingRepository.save(booking);
         return toDto(saved);
     }
 
-    @Override
-    public BookingDto updateBooking(Long id, BookingDto bookingDto) {
-        Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
 
-        booking.setDate(bookingDto.getDate());
-        booking.setStatus(bookingDto.getStatus());
-        booking.setNumberOfPeople(bookingDto.getNumberOfPeople());
-        booking.setTotalAmount(bookingDto.getTotalAmount());
-
-        // Optionally update user or tour schedule:
-        if (!booking.getUser().getUserId().equals(bookingDto.getUserId())) {
-            User user = userRepository.findById(bookingDto.getUserId())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            booking.setUser(user);
-        }
-
-        if (!booking.getTourSchedule().getId().equals(bookingDto.getTourScheduleId())) {
-            TourSchedule schedule = tourScheduleRepository.findById(bookingDto.getTourScheduleId())
-                    .orElseThrow(() -> new RuntimeException("Tour schedule not found"));
-            booking.setTourSchedule(schedule);
-        }
-
-        return toDto(bookingRepository.save(booking));
-    }
+//    @Override
+//    public BookingDto updateBooking(Long id, BookingDto bookingDto) {
+//        Booking booking = bookingRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Booking not found"));
+//
+//        booking.setDate(bookingDto.getDate());
+//        booking.setStatus(bookingDto.getStatus());
+//        booking.setNumberOfPeople(bookingDto.getNumberOfPeople());
+//        booking.setTotalAmount(bookingDto.getTotalAmount());
+//
+//        // Optionally update user or tour schedule:
+//        if (!booking.getUser().getUserId().equals(bookingDto.getUserId())) {
+//            User user = userRepository.findById(bookingDto.getUserId())
+//                    .orElseThrow(() -> new RuntimeException("User not found"));
+//            booking.setUser(user);
+//        }
+//
+//        if (!booking.getTourSchedule().getId().equals(bookingDto.getTourScheduleId())) {
+//            TourSchedule schedule = tourScheduleRepository.findById(bookingDto.getTourScheduleId())
+//                    .orElseThrow(() -> new RuntimeException("Tour schedule not found"));
+//            booking.setTourSchedule(schedule);
+//        }
+//
+//        return toDto(bookingRepository.save(booking));
+//    }
 
     @Override
     public void deleteBooking(Long id) {

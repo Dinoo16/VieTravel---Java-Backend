@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface GuideRepository extends JpaRepository<Guide, Long> {
 
     // find guide by user id
-    Optional<Guide> findByUserId(Long userId);
+    Optional<Guide> findByUserUserId(Long userId);
     //Find by name
     Optional<Guide> findByName(String name);
 }
