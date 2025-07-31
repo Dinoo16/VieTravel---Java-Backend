@@ -40,11 +40,21 @@ public class TourScheduleServiceImpl implements TourScheduleService {
         return toDto(scheduleRepository.save(schedule));
     }
 
+    // Get schedule by id
     @Override
     public TourScheduleDto getScheduleById(Long id) {
         return scheduleRepository.findById(id)
                 .map(this::toDto)
                 .orElseThrow(() -> new RuntimeException("Schedule not found"));
+    }
+
+    // Get all schedule
+    @Override
+    public List<TourScheduleDto> getAllSchedules() {
+        return scheduleRepository.findAll().stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+
     }
 
     private TourScheduleDto toDto(TourSchedule schedule) {
@@ -60,5 +70,7 @@ public class TourScheduleServiceImpl implements TourScheduleService {
         );
         return dto;
     }
+
+
 }
 

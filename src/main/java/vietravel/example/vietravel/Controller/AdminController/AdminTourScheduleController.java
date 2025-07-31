@@ -18,12 +18,6 @@ public class AdminTourScheduleController {
 
     private final TourScheduleService tourScheduleService;
 
-    // Create a schedule
-    @PostMapping
-    public ResponseEntity<TourScheduleDto> createSchedule(@RequestBody TourScheduleDto dto) {
-        TourScheduleDto created = tourScheduleService.createSchedule(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
-    }
 
     // Get all schedules
     @GetMapping
@@ -39,20 +33,4 @@ public class AdminTourScheduleController {
         return ResponseEntity.ok(schedule);
     }
 
-    // Update a schedule
-    @PutMapping("/{id}")
-    public ResponseEntity<TourScheduleDto> updateSchedule(
-            @PathVariable Long id,
-            @RequestBody TourScheduleDto dto
-    ) {
-        TourScheduleDto updated = tourScheduleService.updateSchedule(id, dto);
-        return ResponseEntity.ok(updated);
-    }
-
-    // Delete a schedule
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSchedule(@PathVariable Long id) {
-        tourScheduleService.deleteSchedule(id);
-        return ResponseEntity.noContent().build();
-    }
 }
