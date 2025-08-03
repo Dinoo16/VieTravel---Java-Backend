@@ -2,8 +2,11 @@ package vietravel.example.vietravel.Model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import vietravel.example.vietravel.Enum.UserRole;
+import vietravel.example.vietravel.dto.UserDto;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -32,7 +35,26 @@ public class User {
     @Column(columnDefinition = "TEXT")
     private String avatar;
 
+    private String address;
+
+    private Date dateOfBirth;
+
+    private String bio;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Booking> bookings;
+
+    public User(UserDto userDto, PasswordEncoder passwordEncoder) {
+        this.name = userDto.getName();
+        this.email = userDto.getEmail();
+        this.password = passwordEncoder.encode(userDto.getPassword());
+        this.role = userDto.getRole();
+        this.phone = userDto.getPhone();
+        this.avatar = userDto.getAvatar();
+        this.address = userDto.getAddress();
+        this.dateOfBirth = userDto.getDateOfBirth();
+        this.bio = userDto.getBio();
+    }
+
 }
 

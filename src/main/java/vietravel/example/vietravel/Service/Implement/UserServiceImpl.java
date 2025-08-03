@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());
         dto.setPassword(user.getPassword());
-        dto.setRole(user.getRole().name());
+        dto.setRole(user.getRole());
         dto.setPhone(user.getPhone());
         dto.setAvatar(user.getAvatar());
         return dto;
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
                 .name(dto.getName())
                 .email(dto.getEmail())
                 .password(dto.getPassword())
-                .role(UserRole.valueOf(dto.getRole().toUpperCase()))
+                .role(dto.getRole())
                 .phone(dto.getPhone())
                 .avatar(dto.getAvatar())
                 .build();
