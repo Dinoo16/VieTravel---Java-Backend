@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vietravel.example.vietravel.Model.Destination;
 import vietravel.example.vietravel.Model.Region;
+import vietravel.example.vietravel.Model.Tour;
 import vietravel.example.vietravel.Repository.DestinationRepository;
+import vietravel.example.vietravel.Repository.RegionRepository;
 import vietravel.example.vietravel.Service.DestinationService;
 import vietravel.example.vietravel.dto.DestinationDto;
 
@@ -17,25 +19,33 @@ import java.util.stream.Collectors;
 public class DestinationServiceImpl implements DestinationService {
 
     private final DestinationRepository destinationRepository;
+    private final RegionRepository regionRepository;
 
 
     private DestinationDto toDto(Destination destination) {
+        List<Long> tourIds = destination.getTours() != null ?
+                destination.getTours().stream().map(Tour::getTourId).toList() : null;
+
         return DestinationDto.builder()
                 .id(destination.getDestinationId())
                 .name(destination.getName())
                 .description(destination.getDescription())
                 .backgroundImage(destination.getBackgroundImage())
                 .regionId(destination.getRegion().getRegionId())
+                .tourIds(tourIds)
                 .build();
     }
 
 
     @Override
     public DestinationDto createDestination(DestinationDto destinationDto) {
+        Region region = regionRepository.findById(destinationDto.getRegionId())
+                .orElseThrow(() -> new RuntimeException("Region not found"));
+
         Destination destination = Destination.builder()
                 .name(destinationDto.getName())
                 .description(destinationDto.getDescription())
-                .region(Region.builder().regionId(destinationDto.getRegionId()).build())
+                .region(region)
                 .backgroundImage(destinationDto.getBackgroundImage()).build();
         return toDto(destinationRepository.save(destination));
 
