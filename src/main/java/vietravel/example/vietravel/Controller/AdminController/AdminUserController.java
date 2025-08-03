@@ -46,4 +46,5 @@ public class AdminUserController {
         List<UserDto> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
+
 }

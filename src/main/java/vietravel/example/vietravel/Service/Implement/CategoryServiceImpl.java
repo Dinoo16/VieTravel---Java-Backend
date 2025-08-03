@@ -3,6 +3,7 @@ package vietravel.example.vietravel.Service.Implement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vietravel.example.vietravel.Model.Category;
+import vietravel.example.vietravel.Model.Tour;
 import vietravel.example.vietravel.Repository.CategoryRepository;
 import vietravel.example.vietravel.Service.CategoryService;
 import vietravel.example.vietravel.dto.CategoryDto;
@@ -37,12 +38,25 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void deleteCategory(Long id) {
-        if (!categoryRepository.existsById(id)) {
-            throw new RuntimeException("Category not found");
+    public void deleteCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        // Không cho xóa nếu là category duy nhất của tour nào đó
+        for (Tour tour : category.getTours()) {
+            if (tour.getCategories().size() == 1) {
+                throw new IllegalStateException("Cannot delete category. Tour '" + tour.getTitle() + "' requires at least one category.");
+            }
         }
-        categoryRepository.deleteById(id);
+
+        // Gỡ liên kết
+        for (Tour tour : category.getTours()) {
+            tour.getCategories().remove(category);
+        }
+
+        categoryRepository.delete(category);
     }
+
 
     @Override
     public CategoryDto getCategoryById(Long id) {
