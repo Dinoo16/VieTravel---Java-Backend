@@ -23,7 +23,7 @@ public class TourDto {
     @NotNull(message = "Return time is required")
     private LocalDateTime returnTime;
 
-    @NotBlank(message = "Category is required")
+    @NotEmpty(message = "Category is required")
     List<String> categoryNames;
 
 

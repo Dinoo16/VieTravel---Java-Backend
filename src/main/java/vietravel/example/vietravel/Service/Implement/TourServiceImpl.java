@@ -26,12 +26,13 @@ public class TourServiceImpl implements TourService {
     private TourDto toDto(Tour tour) {
         TourDto dto = new TourDto();
         dto.setId(tour.getTourId());
+        dto.setTitle(tour.getTitle());
         dto.setDestinationName(tour.getDestination().getName());
         dto.setDeparture(tour.getDeparture());
         dto.setDepartureTime(tour.getDepartureTime());
         dto.setReturnTime(tour.getReturnTime());
         dto.setCategoryNames(tour.getCategories().stream().map(Category::getName).collect(Collectors.toList()));
-        dto.setGuideName(tour.getGuide().getName());
+        dto.setGuideName(tour.getGuide() != null ? tour.getGuide().getName() : null);
         dto.setDuration(tour.getDuration() + (tour.getDuration() == 1 ? " day" : " days"));
         dto.setPrice(tour.getPrice());
         dto.setDescription(tour.getDescription());
@@ -39,24 +40,31 @@ public class TourServiceImpl implements TourService {
         dto.setGallery(tour.getGallery());
         dto.setTourPlans(tour.getTourPlans().stream().map(plan -> {
             TourPlanDto planDto = new TourPlanDto();
+            planDto.setId(plan.getId());
             planDto.setDay(plan.getDay());
             planDto.setTitle(plan.getTitle());
             planDto.setContent(plan.getContent());
+            planDto.setTourId(plan.getTour().getTourId());
             return planDto;
         }).collect(Collectors.toList()));
-        dto.setReviews(
-                tour.getReviews().stream()
-                        .map(review -> {
-                            ReviewDto reviewDto = new ReviewDto();
-                            reviewDto.setId(review.getId());
-                            reviewDto.setUserId(review.getUser().getUserId());
-                            reviewDto.setTourId(review.getTour().getTourId());
-                            reviewDto.setRating(review.getRating());
-                            reviewDto.setComment(review.getComment());
-                            return reviewDto;
-                        })
-                        .collect(Collectors.toList())
-        );
+        if (tour.getReviews() != null) {
+            dto.setReviews(
+                    tour.getReviews().stream()
+                            .map(review -> {
+                                ReviewDto reviewDto = new ReviewDto();
+                                reviewDto.setId(review.getId());
+                                reviewDto.setUserId(review.getUser().getUserId());
+                                reviewDto.setTourId(review.getTour().getTourId());
+                                reviewDto.setRating(review.getRating());
+                                reviewDto.setComment(review.getComment());
+                                return reviewDto;
+                            })
+                            .collect(Collectors.toList())
+            );
+        } else {
+            dto.setReviews(new ArrayList<>());
+        }
+
         return dto;
     }
 
@@ -72,8 +80,13 @@ public class TourServiceImpl implements TourService {
         }
 
         // Fetch Guide
-        Guide guide = guideRepository.findByName(dto.getGuideName())
-                .orElseThrow(() -> new RuntimeException("Guide not found"));
+        Guide guide = null;
+        if (dto.getGuideName() != null && !dto.getGuideName().isBlank()) {
+            guide = guideRepository.findByName(dto.getGuideName())
+                    .orElseThrow(() -> new RuntimeException("Guide not found"));
+        }
+//        Guide guide = guideRepository.findByName(dto.getGuideName())
+//                .orElseThrow(() -> new RuntimeException("Guide not found"));
 
         // Convert TourPlans
         List<TourPlan> tourPlans = dto.getTourPlans().stream()

@@ -1,5 +1,6 @@
 package vietravel.example.vietravel.Controller.AdminController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +19,7 @@ public class AdminTourController {
 
     // Create tour
     @PostMapping
-    public ResponseEntity<TourDto> createTour(@RequestBody TourDto tourDto) {
+    public ResponseEntity<TourDto> createTour(@Valid @RequestBody TourDto tourDto) {
         TourDto createdTour = tourService.createTour(tourDto);
         return ResponseEntity.ok(createdTour);
     }

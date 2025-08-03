@@ -7,7 +7,6 @@ public class TourPlanDto {
 
     private Long id;
 
-    @NotNull(message = "Tour ID is required")
     private Long tourId;
 
     @NotNull(message = "Day is required")
