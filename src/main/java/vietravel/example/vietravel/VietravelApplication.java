@@ -20,7 +20,7 @@ public class VietravelApplication {
 	@Bean
 	CommandLineRunner initAdmin(UserRepository userRepository, PasswordEncoder encoder) {
 		return args -> {
-			userRepository.findByEmail("admin@example.com").orElseGet(() -> {
+			userRepository.findByEmail("admin@domain.com").orElseGet(() -> {
 				User admin = User.builder()
 						.email("admin@domain.com")
 						.name("Admin")

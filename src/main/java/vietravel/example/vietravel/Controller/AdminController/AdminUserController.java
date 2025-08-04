@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import vietravel.example.vietravel.Service.UserService;
 import vietravel.example.vietravel.dto.UserDto;
@@ -19,14 +20,13 @@ public class AdminUserController {
     private final UserService userService;
 
     // Create user (admin can create any account)
-    @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
-        UserDto user = userService.createUser(userDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
-    }
+//    @PostMapping
+//    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto, PasswordEncoder encoder) {
+//        UserDto user = userService.createUser(userDto, encoder);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+//    }
 
     // Admin create guide account
-
     @PostMapping("/create-guide-account")
     public ResponseEntity<UserDto> createGuideAccount(@RequestBody UserDto dto) {
         UserDto user = userService.createGuideAccount(dto);

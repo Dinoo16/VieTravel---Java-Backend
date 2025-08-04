@@ -1,78 +1,76 @@
 package vietravel.example.vietravel.Controller.AuthController;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import vietravel.example.vietravel.Config.JwtAuthenticationFilter;
+import vietravel.example.vietravel.Config.JwtUtil;
 import vietravel.example.vietravel.Enum.UserRole;
 import vietravel.example.vietravel.Model.User;
 import vietravel.example.vietravel.Repository.UserRepository;
+import vietravel.example.vietravel.Service.Implement.UserServiceImpl;
+import vietravel.example.vietravel.Service.UserService;
 import vietravel.example.vietravel.dto.UserDto;
+import org.springframework.validation.BindingResult;
 
-@Controller
-@RequestMapping("/auth")
+import java.util.Collections;
+
+@RestController
+@RequestMapping("/api/auth")
 public class AuthController {
-    @Autowired
-    UserRepository userRepository;
 
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private JwtUtil jwtUtil;
 
-    @GetMapping("/signin")
-    public String getSignin(@RequestParam(value = "success", required = false) String success, Model model) {
-        if (success != null) {
-            model.addAttribute("message", "Registration successful! Please sign in.");
-        }
-        return "signin";
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserService userService;
+
+    // ✅ Optional: health check or basic message
+    @GetMapping("/ping")
+    public ResponseEntity<String> ping() {
+        return ResponseEntity.ok("Auth API is running");
     }
 
-    @GetMapping("/signup")
-    public String getSignup(Model model) {
-        model.addAttribute("user", new UserDto());
-        return "signup";
-    }
-
+    // ✅ Signup
     @PostMapping("/signup")
-    public String signupHandle(Model model, @Valid @ModelAttribute UserDto ut, BindingResult result) {
-
+    public ResponseEntity<?> signupHandle(@Valid @RequestBody UserDto userDto, BindingResult result) {
         if (result.hasErrors()) {
-            System.out.println("❌ Validation failed: " + result.getAllErrors());
-            model.addAttribute("user", ut);
-            return "signup";
+            // Trả về danh sách lỗi nếu có
+            return ResponseEntity.badRequest().body(
+                    result.getFieldErrors().stream()
+                            .map(e -> e.getField() + ": " + e.getDefaultMessage())
+                            .toList()
+            );
         }
 
-        try {
-
-            if (userRepository.findByEmail(ut.getEmail()).isPresent()) {
-                System.out.println("❌ Email already exists!");
-                model.addAttribute("error", "Email already exists!");
-                return "signup";
-            }
-
-            // Default Role USER
-            if (ut.getRole() == null) {
-                ut.setRole(UserRole.CUSTOMER);
-            }
-
-            System.out.println("✅ Saving user: " + ut.getEmail());
-
-            User newUser = new User(ut, passwordEncoder);
-            userRepository.save(newUser);
-
-            System.out.println("🎉 User saved successfully!");
-
-            return "redirect:/auth/signin";
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("error", "Error saving user: " + e.getMessage());
-            return "signup";
-        }
+        UserDto user = userService.createUser(userDto, passwordEncoder);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
 
+    // ✅ (Optional) Dummy signin logic — actual logic should verify password and return token
+    @PostMapping("/signin")
+    public ResponseEntity<?> signin(@RequestBody UserDto userDto) {
+        return userRepository.findByEmail(userDto.getEmail())
+                .map(user -> {
+                    if (passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
+                        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+                        return ResponseEntity.ok(Collections.singletonMap("token", token));
+                        // Return JWT or session token here if implemented
+                    } else {
+                        return ResponseEntity.status(401).body("Invalid password");
+                    }
+                })
+                .orElse(ResponseEntity.status(404).body("User not found"));
+    }
 }
-

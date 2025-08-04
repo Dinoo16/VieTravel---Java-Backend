@@ -1,7 +1,11 @@
 package vietravel.example.vietravel.Service.Implement;
 
+
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vietravel.example.vietravel.Enum.UserRole;
 import vietravel.example.vietravel.Model.User;
 import vietravel.example.vietravel.Repository.UserRepository;
@@ -45,10 +49,14 @@ public class UserServiceImpl implements UserService {
     // Create normal user
 
     @Override
-    public UserDto createUser(UserDto dto) {
+    public UserDto createUser(UserDto dto, PasswordEncoder encoder) {
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already exists");
+        }
+
         User user = new User();
         user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword()); // encode password
+        user.setPassword(encoder.encode(dto.getPassword()));
         user.setRole(UserRole.CUSTOMER); // default role
         User saved = userRepository.save(user);
         return toDto(saved);
@@ -83,12 +91,13 @@ public class UserServiceImpl implements UserService {
         return toDto(updatedUser);
     }
 
+    @Transactional
     @Override
     public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new RuntimeException("User not found");
-        }
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        userRepository.delete(user);
     }
 
     @Override
