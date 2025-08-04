@@ -43,7 +43,6 @@ public class TourDto {
 
     private List<String> gallery;
 
-    @Size(min = 1, message = "At least one tour plan is required")
     private List<TourPlanDto> tourPlans;
 
     private List<ReviewDto> reviews;

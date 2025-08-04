@@ -1,5 +1,6 @@
 package vietravel.example.vietravel.Service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import vietravel.example.vietravel.dto.UserDto;
 import java.util.List;

@@ -41,7 +41,7 @@ public class User {
 
     private String bio;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Booking> bookings;
 
     public User(UserDto userDto, PasswordEncoder passwordEncoder) {

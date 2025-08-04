@@ -1,5 +1,6 @@
 package vietravel.example.vietravel.Service.Implement;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vietravel.example.vietravel.Model.*;
@@ -38,15 +39,19 @@ public class TourServiceImpl implements TourService {
         dto.setDescription(tour.getDescription());
         dto.setBackgroundImage(tour.getBackgroundImage());
         dto.setGallery(tour.getGallery());
-        dto.setTourPlans(tour.getTourPlans().stream().map(plan -> {
-            TourPlanDto planDto = new TourPlanDto();
-            planDto.setId(plan.getId());
-            planDto.setDay(plan.getDay());
-            planDto.setTitle(plan.getTitle());
-            planDto.setContent(plan.getContent());
-            planDto.setTourId(plan.getTour().getTourId());
-            return planDto;
-        }).collect(Collectors.toList()));
+        dto.setTourPlans(
+                tour.getTourPlans() != null ?
+                        tour.getTourPlans().stream().map(plan -> {
+                            TourPlanDto planDto = new TourPlanDto();
+                            planDto.setId(plan.getId());
+                            planDto.setTourId(plan.getTour().getTourId());
+                            planDto.setDay(plan.getDay());
+                            planDto.setTitle(plan.getTitle());
+                            planDto.setContent(plan.getContent());
+                            return planDto;
+                        }).collect(Collectors.toList())
+                        : new ArrayList<>()
+        );
         if (tour.getReviews() != null) {
             dto.setReviews(
                     tour.getReviews().stream()
@@ -89,13 +94,16 @@ public class TourServiceImpl implements TourService {
 //                .orElseThrow(() -> new RuntimeException("Guide not found"));
 
         // Convert TourPlans
-        List<TourPlan> tourPlans = dto.getTourPlans().stream()
+        List<TourPlan> tourPlans = dto.getTourPlans() != null
+                ? dto.getTourPlans().stream()
                 .map(planDto -> TourPlan.builder()
                         .day(planDto.getDay())
                         .title(planDto.getTitle())
                         .content(planDto.getContent())
                         .build())
-                .collect(Collectors.toList());
+                .collect(Collectors.toList())
+                : new ArrayList<>();
+
 
         // Build Tour
         Tour tour = Tour.builder()
@@ -132,6 +140,7 @@ public class TourServiceImpl implements TourService {
     }
 
     @Override
+    @Transactional
     public TourDto updateTour(Long id, TourDto tourDto) {
         Tour tour = tourRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tour not found"));
@@ -144,18 +153,25 @@ public class TourServiceImpl implements TourService {
             throw new RuntimeException("One or more categories not found");
         }
 
-        Guide guide = guideRepository.findByName(tourDto.getGuideName())
-                .orElseThrow(() -> new RuntimeException("Guide not found"));
+        Guide guide = null;
+        if (tourDto.getGuideName() != null && !tourDto.getGuideName().isBlank()) {
+            guide = guideRepository.findByName(tourDto.getGuideName())
+                    .orElseThrow(() -> new RuntimeException("Guide not found"));
+        }
 
-        // Xóa các kế hoạch cũ và tạo lại từ DTO
-        List<TourPlan> tourPlans = tourDto.getTourPlans().stream()
-                .map(planDto -> TourPlan.builder()
+        // Clear existing tourPlans and add new ones
+        tour.getTourPlans().clear();
+        if (tourDto.getTourPlans() != null) {
+            tourDto.getTourPlans().forEach(planDto -> {
+                TourPlan plan = TourPlan.builder()
                         .day(planDto.getDay())
                         .title(planDto.getTitle())
                         .content(planDto.getContent())
-                        .tour(tour)
-                        .build())
-                .collect(Collectors.toList());
+                        .tour(tour) // Set the parent tour
+                        .build();
+                tour.getTourPlans().add(plan); // ✅ Adds to the existing collection
+            });
+        }
 
         // Cập nhật các trường
         tour.setTitle(tourDto.getTitle());
@@ -171,8 +187,6 @@ public class TourServiceImpl implements TourService {
         tour.setDestination(destination);
         tour.setCategories(categories);
         tour.setGuide(guide);
-        tour.setTourPlans(tourPlans);
-
         Tour updatedTour = tourRepository.save(tour);
         return toDto(updatedTour);
     }

@@ -2,10 +2,9 @@ package vietravel.example.vietravel.Service.Implement;
 
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.hibernate.Hibernate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import vietravel.example.vietravel.Enum.UserRole;
 import vietravel.example.vietravel.Model.User;
 import vietravel.example.vietravel.Repository.UserRepository;
@@ -91,14 +90,13 @@ public class UserServiceImpl implements UserService {
         return toDto(updatedUser);
     }
 
-    @Transactional
     @Override
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
         userRepository.delete(user);
     }
+
 
     @Override
     public UserDto getUserById(Long id) {

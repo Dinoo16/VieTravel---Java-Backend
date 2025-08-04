@@ -54,7 +54,9 @@ public class AuthController {
         }
 
         UserDto user = userService.createUser(userDto, passwordEncoder);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+//        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+        return ResponseEntity.ok(Collections.singletonMap("token", token));
     }
 
 

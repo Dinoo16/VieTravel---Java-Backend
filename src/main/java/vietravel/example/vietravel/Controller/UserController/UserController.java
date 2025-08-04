@@ -25,10 +25,10 @@ public class UserController {
     }
 
     // Get user by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
-        UserDto user = userService.getUserById(id);
-        return ResponseEntity.ok(user);
-    }
+//    @GetMapping("/{id}")
+//    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+//        UserDto user = userService.getUserById(id);
+//        return ResponseEntity.ok(user);
+//    }
 
 }

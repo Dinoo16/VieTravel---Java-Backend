@@ -2,6 +2,7 @@ package vietravel.example.vietravel.Model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -61,7 +62,7 @@ public class Tour {
     private List<String> gallery;
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TourPlan> tourPlans;
+    private List<TourPlan> tourPlans = new ArrayList<>();
 
     // Available dates
     @ElementCollection
@@ -76,4 +77,10 @@ public class Tour {
 
     @OneToMany(mappedBy = "tour", cascade = CascadeType.ALL)
     private List<TourSchedule> tourSchedules;
+
+    // Helper method
+    public void addTourPlan(TourPlan plan) {
+        plan.setTour(this);
+        this.tourPlans.add(plan);
+    }
 }
