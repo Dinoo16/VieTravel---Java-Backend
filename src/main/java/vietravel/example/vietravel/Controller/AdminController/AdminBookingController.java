@@ -27,17 +27,6 @@ public class AdminBookingController {
         return ResponseEntity.ok(bookingService.getBookingById(id));
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<BookingDto>> getBookingsByUserId(@PathVariable Long userId) {
-        return ResponseEntity.ok(bookingService.getBookingsByUserId(userId));
-    }
-
-    @GetMapping("/schedule/{tourScheduleId}")
-    public ResponseEntity<List<BookingDto>> getBookingsByTourScheduleId(@PathVariable Long tourScheduleId) {
-        return ResponseEntity.ok(bookingService.getBookingsByTourScheduleId(tourScheduleId));
-    }
-
-
     @GetMapping
     public ResponseEntity<List<BookingDto>> getAllBookings() {
         return ResponseEntity.ok(bookingService.getAllBookings());

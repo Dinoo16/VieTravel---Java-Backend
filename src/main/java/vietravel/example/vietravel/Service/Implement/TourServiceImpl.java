@@ -130,6 +130,7 @@ public class TourServiceImpl implements TourService {
                 .categories(categories)
                 .guide(guide)
                 .tourPlans(new ArrayList<>()) // Temporary
+
                 .build();
 
 

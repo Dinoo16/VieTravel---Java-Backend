@@ -10,8 +10,6 @@ public interface BookingService {
 //    BookingDto updateBooking(Long id, BookingDto bookingDto);
     void deleteBooking(Long id);
     BookingDto getBookingById(Long id);
-    List<BookingDto> getBookingsByUserId(Long userId);
-    List<BookingDto> getBookingsByTourScheduleId(Long tourScheduleId);
     List<BookingDto> getAllBookings();
 
 }

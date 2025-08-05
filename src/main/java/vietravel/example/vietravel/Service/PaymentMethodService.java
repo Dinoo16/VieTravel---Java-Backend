@@ -1,8 +1,9 @@
 package vietravel.example.vietravel.Service;
 
 
-import vietravel.example.vietravel.dto.PaymentDto;
 import vietravel.example.vietravel.dto.PaymentMethodDto;
+
+import java.util.List;
 
 public interface PaymentMethodService {
 
@@ -12,5 +13,8 @@ public interface PaymentMethodService {
 
     void deletePaymentMethod(Long id);
 
+    PaymentMethodDto getPaymentMethodById(Long id);
+
+    List<PaymentMethodDto> getAllPaymentMethods();
 
 }

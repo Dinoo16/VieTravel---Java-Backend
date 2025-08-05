@@ -18,6 +18,17 @@ public class AdminTourScheduleController {
 
     private final TourScheduleService tourScheduleService;
 
+    // Use when creating a custom schedule with specific date and guides (not sample)
+    @PostMapping
+    public ResponseEntity<TourScheduleDto> createDynamicSchedule(@RequestBody TourScheduleDto dto) {
+        TourScheduleDto result = tourScheduleService.createDynamicSchedule(
+                dto.getTourId(),
+                dto.getDepartureTime(),
+                dto.getReturnTime(),
+                dto.getGuideIds()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    }
 
     // Get all schedules
     @GetMapping

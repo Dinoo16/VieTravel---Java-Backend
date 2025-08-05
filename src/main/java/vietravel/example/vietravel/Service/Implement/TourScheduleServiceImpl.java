@@ -23,6 +23,8 @@ public class TourScheduleServiceImpl implements TourScheduleService {
     private final TourRepository tourRepository;
     private final GuideRepository guideRepository;
 
+
+    // Use when creating a custom schedule with specific date and guides (not sample)
     @Override
     public TourScheduleDto createDynamicSchedule(Long tourId, LocalDateTime departureDate, LocalDateTime returnDate, List<Long> guideIds) {
         Tour tour = tourRepository.findById(tourId)

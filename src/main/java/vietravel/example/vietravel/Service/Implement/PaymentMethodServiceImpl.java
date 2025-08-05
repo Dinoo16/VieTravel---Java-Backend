@@ -9,7 +9,9 @@ import vietravel.example.vietravel.Repository.UserRepository;
 import vietravel.example.vietravel.Service.PaymentMethodService;
 import vietravel.example.vietravel.dto.PaymentMethodDto;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +49,21 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
         paymentMethodRepository.deleteById(id);
     }
 
+    @Override
+    public PaymentMethodDto getPaymentMethodById(Long id) {
+        PaymentMethod paymentMethod = paymentMethodRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Payment method not found!"));
+        return toDto(paymentMethod);
+    }
+
+    @Override
+    public List<PaymentMethodDto> getAllPaymentMethods() {
+        return paymentMethodRepository.findAll()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
     private PaymentMethodDto toDto(PaymentMethod entity) {
         PaymentMethodDto dto = new PaymentMethodDto();
         dto.setId(entity.getId());
@@ -73,4 +90,6 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 
         return entity;
     }
+
+
 }

@@ -12,8 +12,7 @@ public class BookingDto {
     @NotNull(message = "User ID is required")
     private Long userId;
 
-    @NotNull(message = "Tour schedule id is required")
-    private Long tourScheduleId;
+    private Long tourId;
 
     @NotNull(message = "Booking date is required")
     private LocalDate date;

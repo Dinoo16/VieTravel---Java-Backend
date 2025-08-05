@@ -17,17 +17,6 @@ public class TourScheduleController {
 
     private final TourScheduleService tourScheduleService;
 
-    @PostMapping("/create")
-    public ResponseEntity<TourScheduleDto> createDynamicSchedule(@RequestBody TourScheduleDto dto) {
-        TourScheduleDto result = tourScheduleService.createDynamicSchedule(
-                dto.getTourId(),
-                dto.getDepartureTime(),
-                dto.getReturnTime(),
-                dto.getGuideIds()
-        );
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<TourScheduleDto> getSchedule(@PathVariable Long id) {
         return ResponseEntity.ok(tourScheduleService.getScheduleById(id));

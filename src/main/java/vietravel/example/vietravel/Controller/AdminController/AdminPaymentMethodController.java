@@ -6,8 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import vietravel.example.vietravel.Model.Payment;
 import vietravel.example.vietravel.Service.PaymentMethodService;
 import vietravel.example.vietravel.dto.PaymentMethodDto;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/payment-methods")
@@ -39,5 +42,20 @@ public class AdminPaymentMethodController {
     public ResponseEntity<Void> deletePaymentMethod(@PathVariable Long id) {
         paymentMethodService.deletePaymentMethod(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // Get all Payment method
+
+    @GetMapping
+    public ResponseEntity<List<PaymentMethodDto>> getAllPaymentMethod() {
+        List<PaymentMethodDto> dto = paymentMethodService.getAllPaymentMethods();
+        return ResponseEntity.ok(dto);
+    }
+
+    // Get payment method by id
+    @GetMapping("/{id}")
+    public ResponseEntity<PaymentMethodDto> getPaymentMethodById(@PathVariable Long id) {
+        PaymentMethodDto dto = paymentMethodService.getPaymentMethodById(id);
+        return ResponseEntity.ok(dto);
     }
 }

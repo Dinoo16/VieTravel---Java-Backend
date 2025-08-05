@@ -3,14 +3,18 @@ package vietravel.example.vietravel.Service.Implement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vietravel.example.vietravel.Model.Booking;
+import vietravel.example.vietravel.Model.Tour;
 import vietravel.example.vietravel.Model.TourSchedule;
 import vietravel.example.vietravel.Model.User;
 import vietravel.example.vietravel.Repository.BookingRepository;
+import vietravel.example.vietravel.Repository.TourRepository;
 import vietravel.example.vietravel.Repository.TourScheduleRepository;
 import vietravel.example.vietravel.Repository.UserRepository;
 import vietravel.example.vietravel.Service.BookingService;
 import vietravel.example.vietravel.dto.BookingDto;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,6 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
+    private final TourRepository tourRepository;
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final TourScheduleRepository tourScheduleRepository;
@@ -53,22 +58,42 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto createBooking(BookingDto bookingDto) {
-        TourSchedule originalSchedule = tourScheduleRepository.findById(bookingDto.getTourScheduleId())
-                .orElseThrow(() -> new RuntimeException("Tour schedule not found"));
 
-        // Tạo bản sao mới của TourSchedule từ originalSchedule
+        // 1. Validate ngày khởi hành
+        if (bookingDto.getDate().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Departure date must be today or in the future");
+        }
+
+        // 2. Validate số người
+        if (bookingDto.getNumberOfPeople() <= 0) {
+            throw new IllegalArgumentException("Number of people must be greater than 0");
+        }
+
+        // 3. Lấy thông tin User
+        User user = userRepository.findById(bookingDto.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + bookingDto.getUserId()));
+
+        // 4. Lấy Tour từ tourId
+        Long tourId = bookingDto.getId(); // bạn cần thêm trường này vào BookingDto
+        Tour tour = tourRepository.findById(tourId)
+                .orElseThrow(() -> new RuntimeException("Tour not found with id: " + tourId));
+
+        // 5. Tính ngày đi và ngày về
+        LocalDateTime departureDateTime = bookingDto.getDate().atStartOfDay();
+        LocalDateTime returnDateTime = departureDateTime.plusDays(tour.getDuration());
+
+        // 6. Tạo TourSchedule mới (tạm không có hướng dẫn viên)
         TourSchedule newSchedule = TourSchedule.builder()
-                .tour(originalSchedule.getTour())
-                .departureDate(bookingDto.getDate().atStartOfDay()) // Gán ngày đi theo ngày đặt
-                .returnTime(originalSchedule.getReturnTime()) // Có thể tính toán lại tùy theo số ngày
-                .guides(originalSchedule.getGuides())
+                .tour(tour)
+                .departureDate(departureDateTime)
+                .returnTime(returnDateTime)
+                .guides(List.of()) // có thể cập nhật sau
                 .build();
         tourScheduleRepository.save(newSchedule);
 
-        // Gán schedule mới cho booking
+        // 7. Tạo Booking mới gắn với schedule này
         Booking booking = Booking.builder()
-                .user(userRepository.findById(bookingDto.getUserId())
-                        .orElseThrow(() -> new RuntimeException("User not found")))
+                .user(user)
                 .tourSchedule(newSchedule)
                 .date(bookingDto.getDate())
                 .status(bookingDto.getStatus())
@@ -77,35 +102,11 @@ public class BookingServiceImpl implements BookingService {
                 .build();
 
         Booking saved = bookingRepository.save(booking);
+
+        // 8. Trả về DTO
         return toDto(saved);
     }
 
-
-//    @Override
-//    public BookingDto updateBooking(Long id, BookingDto bookingDto) {
-//        Booking booking = bookingRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Booking not found"));
-//
-//        booking.setDate(bookingDto.getDate());
-//        booking.setStatus(bookingDto.getStatus());
-//        booking.setNumberOfPeople(bookingDto.getNumberOfPeople());
-//        booking.setTotalAmount(bookingDto.getTotalAmount());
-//
-//        // Optionally update user or tour schedule:
-//        if (!booking.getUser().getUserId().equals(bookingDto.getUserId())) {
-//            User user = userRepository.findById(bookingDto.getUserId())
-//                    .orElseThrow(() -> new RuntimeException("User not found"));
-//            booking.setUser(user);
-//        }
-//
-//        if (!booking.getTourSchedule().getId().equals(bookingDto.getTourScheduleId())) {
-//            TourSchedule schedule = tourScheduleRepository.findById(bookingDto.getTourScheduleId())
-//                    .orElseThrow(() -> new RuntimeException("Tour schedule not found"));
-//            booking.setTourSchedule(schedule);
-//        }
-//
-//        return toDto(bookingRepository.save(booking));
-//    }
 
     @Override
     public void deleteBooking(Long id) {
@@ -122,21 +123,6 @@ public class BookingServiceImpl implements BookingService {
         return toDto(booking);
     }
 
-    @Override
-    public List<BookingDto> getBookingsByUserId(Long userId) {
-        return bookingRepository.findByUserUserId(userId)
-                .stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<BookingDto> getBookingsByTourScheduleId(Long tourScheduleId) {
-        return bookingRepository.findByTourScheduleId(tourScheduleId)
-                .stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
-    }
 
     @Override
     public List<BookingDto> getAllBookings() {
