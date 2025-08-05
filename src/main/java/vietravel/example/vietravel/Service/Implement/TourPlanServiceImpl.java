@@ -29,6 +29,9 @@ public class TourPlanServiceImpl implements TourPlanService {
                 .collect(Collectors.toList());
     }
 
+    // Get tour plan by tour id
+
+
     @Override
     public TourPlanDto createTourPlan(TourPlanDto dto) {
         TourPlan entity = toEntity(dto);
@@ -55,10 +58,15 @@ public class TourPlanServiceImpl implements TourPlanService {
         throw new RuntimeException("TourPlan not found with id: " + id);
     }
 
+
+    // Delete tour plan by id
     @Override
     public void deleteTourPlan(Long id) {
         tourPlanRepository.deleteById(id);
     }
+
+    // Delete tour plan by tour id
+
 
     // Convert entity to DTO
     private TourPlanDto toDto(TourPlan tourPlan) {
@@ -71,10 +79,17 @@ public class TourPlanServiceImpl implements TourPlanService {
         return dto;
     }
 
+
     // Convert DTO to entity
     private TourPlan toEntity(TourPlanDto dto) {
         Tour tour = tourRepository.findById(dto.getTourId())
                 .orElseThrow(() -> new RuntimeException("Tour not found"));
+
+        // Check if day is exists or not
+        boolean isDuplicate = tourPlanRepository.existsByTourAndDay(tour, dto.getDay());
+        if(isDuplicate) {
+            throw new RuntimeException("Day " + dto.getDay() + " already exists in this tour");
+        }
 
         return TourPlan.builder()
                 .day(dto.getDay())

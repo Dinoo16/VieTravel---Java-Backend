@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vietravel.example.vietravel.Service.TourService;
 import vietravel.example.vietravel.dto.TourDto;
+import vietravel.example.vietravel.dto.TourPlanDto;
 
 import java.util.List;
 
@@ -48,6 +49,13 @@ public class AdminTourController {
     public ResponseEntity<TourDto> getTourById(@PathVariable Long id) {
         TourDto tour = tourService.getTourById(id);
         return ResponseEntity.ok(tour);
+    }
+
+    // Get tour plans by tour id
+    @GetMapping("/{id}/tour-plans")
+    public ResponseEntity<List<TourPlanDto>> getTourPlansByTourId(@PathVariable Long id) {
+        List<TourPlanDto> tourPlans = tourService.getTourPlansByTourId(id);
+        return ResponseEntity.ok(tourPlans);
     }
 
 }

@@ -4,14 +4,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vietravel.example.vietravel.Model.*;
-import vietravel.example.vietravel.Repository.CategoryRepository;
-import vietravel.example.vietravel.Repository.DestinationRepository;
-import vietravel.example.vietravel.Repository.GuideRepository;
-import vietravel.example.vietravel.Repository.TourRepository;
+import vietravel.example.vietravel.Repository.*;
 import vietravel.example.vietravel.Service.TourService;
 import vietravel.example.vietravel.dto.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +22,7 @@ public class TourServiceImpl implements TourService {
     private final CategoryRepository categoryRepository;
     private final DestinationRepository destinationRepository;
     private final GuideRepository guideRepository;
+    private final TourPlanRepository tourPlanRepository;
 
     private TourDto toDto(Tour tour) {
         TourDto dto = new TourDto();
@@ -93,6 +93,16 @@ public class TourServiceImpl implements TourService {
 //        Guide guide = guideRepository.findByName(dto.getGuideName())
 //                .orElseThrow(() -> new RuntimeException("Guide not found"));
 
+        // Check if day is exists or not
+        Set<Integer> days = new HashSet<>();
+        if (dto.getTourPlans() != null) {
+            for (TourPlanDto planDto : dto.getTourPlans()) {
+                if (!days.add(planDto.getDay())) {
+                    throw new RuntimeException("Duplicate day found in tour plans: day " + planDto.getDay());
+                }
+            }
+        }
+
         // Convert TourPlans
         List<TourPlan> tourPlans = dto.getTourPlans() != null
                 ? dto.getTourPlans().stream()
@@ -103,7 +113,6 @@ public class TourServiceImpl implements TourService {
                         .build())
                 .collect(Collectors.toList())
                 : new ArrayList<>();
-
 
         // Build Tour
         Tour tour = Tour.builder()
@@ -122,6 +131,7 @@ public class TourServiceImpl implements TourService {
                 .guide(guide)
                 .tourPlans(new ArrayList<>()) // Temporary
                 .build();
+
 
         // Link each TourPlan back to Tour
         tourPlans.forEach(plan -> plan.setTour(tour));
@@ -215,6 +225,24 @@ public class TourServiceImpl implements TourService {
         Tour tour = tourRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tour not found"));
         return toDto(tour);
+    }
+
+
+    // Get tour plans by tour id
+    @Override
+    public List<TourPlanDto> getTourPlansByTourId(Long id) {
+        return tourPlanRepository.findByTour_TourId(id).stream().map(this::tourPlanDto).collect(Collectors.toList());
+    }
+
+    // Convert tour plan entity to DTO
+    private TourPlanDto tourPlanDto(TourPlan tourPlan) {
+        TourPlanDto dto = new TourPlanDto();
+        dto.setId(tourPlan.getId());
+        dto.setDay(tourPlan.getDay());
+        dto.setTitle(tourPlan.getTitle());
+        dto.setContent(tourPlan.getContent());
+        dto.setTourId(tourPlan.getTour().getTourId());
+        return dto;
     }
 
 }

@@ -38,7 +38,7 @@ public class SecurityConfig {
 //                        .failureUrl("/auth/signin?error=true")
 //                        .permitAll()
 //                )
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 🪪 No session
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
 
