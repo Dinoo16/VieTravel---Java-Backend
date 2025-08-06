@@ -20,7 +20,15 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<BookingDto> createBooking(@RequestBody BookingDto bookingDto) {
         BookingDto createdBooking = bookingService.createBooking(bookingDto);
+        System.out.println(">>> booking request: " + bookingDto);
         return ResponseEntity.ok(createdBooking);
+    }
+
+    // Cancel booking
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<BookingDto> cancelBooking(@PathVariable Long id) {
+        BookingDto cancelled = bookingService.cancelBooking(id);
+        return ResponseEntity.ok(cancelled);
     }
 
     @GetMapping("/{id}")

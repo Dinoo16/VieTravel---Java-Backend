@@ -17,7 +17,6 @@ public class BookingDto {
     @NotNull(message = "Booking date is required")
     private LocalDate date;
 
-    @NotNull(message = "Status is required")
     private BookingStatus status;
 
     @NotNull(message = "Number of people is required")

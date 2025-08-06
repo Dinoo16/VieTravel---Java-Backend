@@ -2,6 +2,7 @@ package vietravel.example.vietravel.Service.Implement;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import vietravel.example.vietravel.Enum.BookingStatus;
 import vietravel.example.vietravel.Model.Booking;
 import vietravel.example.vietravel.Model.Tour;
 import vietravel.example.vietravel.Model.TourSchedule;
@@ -31,29 +32,12 @@ public class BookingServiceImpl implements BookingService {
         BookingDto dto = new BookingDto();
         dto.setId(booking.getBookingId());
         dto.setUserId(booking.getUser().getUserId());
-        dto.setTourScheduleId(booking.getTourSchedule().getId());
+        dto.setTourId(booking.getTourSchedule().getTour().getTourId());
         dto.setDate(booking.getDate());
         dto.setStatus(booking.getStatus());
         dto.setNumberOfPeople(booking.getNumberOfPeople());
         dto.setTotalAmount(booking.getTotalAmount());
         return dto;
-    }
-
-    private Booking toEntity(BookingDto dto) {
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        TourSchedule schedule = tourScheduleRepository.findById(dto.getTourScheduleId())
-                .orElseThrow(() -> new RuntimeException("Tour schedule not found"));
-
-        return Booking.builder()
-                .user(user)
-                .tourSchedule(schedule)
-                .date(dto.getDate())
-                .status(dto.getStatus())
-                .numberOfPeople(dto.getNumberOfPeople())
-                .totalAmount(dto.getTotalAmount())
-                .build();
     }
 
     @Override
@@ -74,7 +58,7 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + bookingDto.getUserId()));
 
         // 4. Lấy Tour từ tourId
-        Long tourId = bookingDto.getId(); // bạn cần thêm trường này vào BookingDto
+        Long tourId = bookingDto.getTourId(); // bạn cần thêm trường này vào BookingDto
         Tour tour = tourRepository.findById(tourId)
                 .orElseThrow(() -> new RuntimeException("Tour not found with id: " + tourId));
 
@@ -96,7 +80,7 @@ public class BookingServiceImpl implements BookingService {
                 .user(user)
                 .tourSchedule(newSchedule)
                 .date(bookingDto.getDate())
-                .status(bookingDto.getStatus())
+                .status(BookingStatus.PENDING)
                 .numberOfPeople(bookingDto.getNumberOfPeople())
                 .totalAmount(bookingDto.getTotalAmount())
                 .build();
@@ -107,6 +91,18 @@ public class BookingServiceImpl implements BookingService {
         return toDto(saved);
     }
 
+    @Override
+    public BookingDto cancelBooking(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        if (booking.getStatus() == BookingStatus.CANCELLED) {
+            throw new IllegalStateException("Booking is already cancelled");
+        }
+
+        booking.setStatus(BookingStatus.CANCELLED);
+        return toDto(bookingRepository.save(booking));
+    }
 
     @Override
     public void deleteBooking(Long id) {
