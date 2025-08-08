@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import vietravel.example.vietravel.Config.JwtAuthenticationFilter;
@@ -60,19 +62,32 @@ public class AuthController {
     }
 
 
-    // ✅ (Optional) Dummy signin logic — actual logic should verify password and return token
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody UserDto userDto) {
-        return userRepository.findByEmail(userDto.getEmail())
-                .map(user -> {
-                    if (passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
-                        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
-                        return ResponseEntity.ok(Collections.singletonMap("token", token));
-                        // Return JWT or session token here if implemented
-                    } else {
-                        return ResponseEntity.status(401).body("Invalid password");
-                    }
-                })
-                .orElse(ResponseEntity.status(404).body("User not found"));
+        try {
+            return userRepository.findByEmail(userDto.getEmail())
+                    .map(user -> {
+                        if (passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
+                            String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+                            return ResponseEntity.ok(Collections.singletonMap("token", token));
+                        } else {
+                            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password");
+                        }
+                    })
+                    .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found"));
+        } catch (Exception e) {
+            e.printStackTrace(); // logs to console
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An unexpected error occurred");
+        }
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getUserInfo(Authentication authentication) {
+        String email = authentication.getName(); // get email from JWT token
+        UserDto userDto = userService.getUserInfo(email);
+        return ResponseEntity.ok(userDto);
+    }
+
+
 }

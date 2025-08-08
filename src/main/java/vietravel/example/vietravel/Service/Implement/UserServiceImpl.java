@@ -112,4 +112,13 @@ public class UserServiceImpl implements UserService {
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public UserDto getUserInfo(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+        return toDto(user);
+    }
+
+
 }
