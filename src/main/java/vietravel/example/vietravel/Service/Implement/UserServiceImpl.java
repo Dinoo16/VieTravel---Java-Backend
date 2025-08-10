@@ -13,6 +13,7 @@ import vietravel.example.vietravel.dto.UserDto;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,6 +48,10 @@ public class UserServiceImpl implements UserService {
 
     // Create normal user
 
+    public Integer getRandomAvatar() {
+        int number = new Random().nextInt(13) + 1;
+        return number;
+    }
     @Override
     public UserDto createUser(UserDto dto, PasswordEncoder encoder) {
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
@@ -57,6 +62,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(dto.getEmail());
         user.setPassword(encoder.encode(dto.getPassword()));
         user.setRole(UserRole.CUSTOMER); // default role
+        user.setAvatar("avatar_" + (getRandomAvatar()));
         User saved = userRepository.save(user);
         return toDto(saved);
     }

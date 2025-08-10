@@ -1,4 +1,4 @@
-package vietravel.example.vietravel.Controller.UserController;
+package vietravel.example.vietravel.Controller.PublicController;
 
 
 import lombok.RequiredArgsConstructor;
@@ -12,9 +12,8 @@ import vietravel.example.vietravel.dto.CategoryDto;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/api/public/categories")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('USER') or hasRole('GUIDE')")
 public class CategoryController {
 
     private final CategoryService categoryService;

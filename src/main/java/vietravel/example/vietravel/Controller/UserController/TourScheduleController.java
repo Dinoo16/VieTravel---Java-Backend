@@ -10,7 +10,7 @@ import vietravel.example.vietravel.Service.TourScheduleService;
 import vietravel.example.vietravel.dto.TourScheduleDto;
 
 @RestController
-@RequestMapping("/api/tour-schedules")
+@RequestMapping("/api/user/tour-schedules")
 @RequiredArgsConstructor
 
 public class TourScheduleController {

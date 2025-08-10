@@ -9,7 +9,7 @@ import vietravel.example.vietravel.Service.BookingService;
 import vietravel.example.vietravel.dto.BookingDto;
 
 @RestController
-@RequestMapping("/api/bookings")
+@RequestMapping("/api/user/bookings")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('USER')")
 public class BookingController {

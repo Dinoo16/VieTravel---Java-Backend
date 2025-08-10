@@ -27,16 +27,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/auth/**", "/api/**").permitAll()
+                        .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/public/**", "/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 ).formLogin(form -> form.disable())
-//                .formLogin(formLogin -> formLogin
-//                        .loginPage("/auth/signin")
-//                        .loginProcessingUrl("/auth/signin")
-//                        .defaultSuccessUrl("/member/home", true)
-//                        .failureUrl("/auth/signin?error=true")
-//                        .permitAll()
-//                )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

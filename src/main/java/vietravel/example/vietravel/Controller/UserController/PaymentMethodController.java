@@ -9,7 +9,7 @@ import vietravel.example.vietravel.Service.PaymentMethodService;
 import vietravel.example.vietravel.dto.PaymentMethodDto;
 
 @RestController
-@RequestMapping("/api/payment-methods")
+@RequestMapping("/api/user/payment-methods")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('USER') or hasRole('GUIDE')")
 public class PaymentMethodController {

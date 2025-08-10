@@ -1,4 +1,4 @@
-package vietravel.example.vietravel.Controller.UserController;
+package vietravel.example.vietravel.Controller.PublicController;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +13,8 @@ import vietravel.example.vietravel.dto.RegionDto;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/regions")
+@RequestMapping("/api/public/regions")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('USER') or hasRole('GUIDE')")
 public class RegionController {
     private final RegionService regionService;
 

@@ -9,7 +9,7 @@ import vietravel.example.vietravel.Service.UserService;
 import vietravel.example.vietravel.dto.UserDto;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/user/users")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('USER')")
 public class UserController {

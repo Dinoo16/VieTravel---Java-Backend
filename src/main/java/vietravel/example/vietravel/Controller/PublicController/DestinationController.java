@@ -1,4 +1,4 @@
-package vietravel.example.vietravel.Controller.UserController;
+package vietravel.example.vietravel.Controller.PublicController;
 
 
 import lombok.RequiredArgsConstructor;
@@ -13,26 +13,25 @@ import vietravel.example.vietravel.dto.DestinationDto;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/destinations")
+@RequestMapping("/api/public/destinations")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('USER') or hasRole('GUIDE')")
 public class DestinationController {
 
     private final DestinationService destinationService;
 
     // Get all destinations
-    @GetMapping
-    public ResponseEntity<List<DestinationDto>> getAllDestinations() {
-        List<DestinationDto> destinations = destinationService.getAllDestinations();
-        return ResponseEntity.ok(destinations);
-    }
+//    @GetMapping
+//    public ResponseEntity<List<DestinationDto>> getAllDestinations() {
+//        List<DestinationDto> destinations = destinationService.getAllDestinations();
+//        return ResponseEntity.ok(destinations);
+//    }
 
     // Get destination by id
-    @GetMapping("/{id}")
-    public ResponseEntity<DestinationDto> getDestinationById(@PathVariable Long id) {
-        DestinationDto destination = destinationService.getDestinationById(id);
-        return ResponseEntity.ok(destination);
-    }
+//    @GetMapping("/{id}")
+//    public ResponseEntity<DestinationDto> getDestinationById(@PathVariable Long id) {
+//        DestinationDto destination = destinationService.getDestinationById(id);
+//        return ResponseEntity.ok(destination);
+//    }
 
 
 }

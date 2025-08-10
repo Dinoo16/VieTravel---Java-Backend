@@ -1,4 +1,4 @@
-package vietravel.example.vietravel.Controller.UserController;
+package vietravel.example.vietravel.Controller.PublicController;
 
 
 import lombok.RequiredArgsConstructor;
@@ -11,9 +11,8 @@ import vietravel.example.vietravel.dto.TourDto;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/tours")
+@RequestMapping("/api/public/tours")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('USER') or hasRole('GUIDE')")
 public class TourController {
 
     private final TourService tourService;

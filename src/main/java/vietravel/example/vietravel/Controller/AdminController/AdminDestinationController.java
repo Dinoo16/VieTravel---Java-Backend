@@ -13,19 +13,26 @@ import vietravel.example.vietravel.dto.DestinationDto;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin/destinations")
+@RequestMapping("/api/public/destinations")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
+//@PreAuthorize("hasRole('ADMIN')")
 public class AdminDestinationController {
 
     private final DestinationService destinationService;
 
     // Get all destinations
     @GetMapping
-    public ResponseEntity<List<DestinationDto>> getAllDestinations() {
-        List<DestinationDto> destinations = destinationService.getAllDestinations();
-        return ResponseEntity.ok(destinations);
+    public ResponseEntity<?> getAllDestinations() {
+        try {
+            List<DestinationDto> destinations = destinationService.getAllDestinations();
+            return ResponseEntity.ok(destinations);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to fetch destinations: " + e.getMessage());
+        }
     }
+
 
     // Get destination by id
     @GetMapping("/{id}")
