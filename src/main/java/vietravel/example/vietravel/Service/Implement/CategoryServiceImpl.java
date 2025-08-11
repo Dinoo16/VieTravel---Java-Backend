@@ -2,6 +2,7 @@ package vietravel.example.vietravel.Service.Implement;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import vietravel.example.vietravel.Model.Category;
 import vietravel.example.vietravel.Model.Tour;
 import vietravel.example.vietravel.Repository.CategoryRepository;
@@ -77,7 +78,8 @@ public class CategoryServiceImpl implements CategoryService {
         dto.setId(category.getCategoryId());
         dto.setName(category.getName());
         dto.setDescription(category.getDescription());
-        dto.setImage(category.getImage());
+        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
+        dto.setImage(baseUrl + category.getImage());
         return dto;
     }
 }

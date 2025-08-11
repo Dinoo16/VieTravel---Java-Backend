@@ -48,7 +48,7 @@ public class User {
         this.name = userDto.getName();
         this.email = userDto.getEmail();
         this.password = passwordEncoder.encode(userDto.getPassword());
-        this.role = userDto.getRole();
+        this.role = (userDto.getRole() != null) ? userDto.getRole() : UserRole.USER;
         this.phone = userDto.getPhone();
         this.avatar = userDto.getAvatar();
         this.address = userDto.getAddress();

@@ -3,6 +3,7 @@ package vietravel.example.vietravel.Service.Implement;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import vietravel.example.vietravel.Model.*;
 import vietravel.example.vietravel.Repository.*;
 import vietravel.example.vietravel.Service.TourService;
@@ -37,7 +38,8 @@ public class TourServiceImpl implements TourService {
         dto.setDuration(tour.getDuration() + (tour.getDuration() == 1 ? " day" : " days"));
         dto.setPrice(tour.getPrice());
         dto.setDescription(tour.getDescription());
-        dto.setBackgroundImage(tour.getBackgroundImage());
+        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
+        dto.setBackgroundImage(baseUrl + tour.getBackgroundImage());
         dto.setGallery(tour.getGallery());
         dto.setTourPlans(
                 tour.getTourPlans() != null ?

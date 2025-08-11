@@ -2,6 +2,7 @@ package vietravel.example.vietravel.Service.Implement;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import vietravel.example.vietravel.Model.Destination;
 import vietravel.example.vietravel.Model.Region;
 import vietravel.example.vietravel.Model.Tour;
@@ -25,12 +26,12 @@ public class DestinationServiceImpl implements DestinationService {
     private DestinationDto toDto(Destination destination) {
         List<Long> tourIds = destination.getTours() != null ?
                 destination.getTours().stream().map(Tour::getTourId).toList() : null;
-
+        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
         return DestinationDto.builder()
                 .id(destination.getDestinationId())
                 .name(destination.getName())
                 .description(destination.getDescription())
-                .backgroundImage(destination.getBackgroundImage())
+                .backgroundImage(baseUrl + destination.getBackgroundImage())
                 .regionId(destination.getRegion().getRegionId())
                 .tourIds(tourIds)
                 .build();

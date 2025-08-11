@@ -26,6 +26,13 @@ public class AdminUserController {
 //        return ResponseEntity.status(HttpStatus.CREATED).body(user);
 //    }
 
+    // Update profile
+//    @PutMapping("/{id}")
+//    public ResponseEntity<UserDto> updateUserProfile(@PathVariable Long id, @RequestBody UserDto userDto) {
+//        UserDto user = userService.updateUserProfile(id, userDto);
+//        return ResponseEntity.ok(user);
+//    }
+
     // Admin create guide account
     @PostMapping("/create-guide-account")
     public ResponseEntity<UserDto> createGuideAccount(@RequestBody UserDto dto) {

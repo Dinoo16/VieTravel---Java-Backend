@@ -5,15 +5,21 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import vietravel.example.vietravel.Enum.UserRole;
 import vietravel.example.vietravel.Model.User;
 import vietravel.example.vietravel.Repository.UserRepository;
 import vietravel.example.vietravel.Service.UserService;
 import vietravel.example.vietravel.dto.UserDto;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,7 +67,8 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setEmail(dto.getEmail());
         user.setPassword(encoder.encode(dto.getPassword()));
-        user.setRole(UserRole.CUSTOMER); // default role
+        user.setRole(UserRole.USER); // default role
+        System.out.println("Role being set: " + user.getRole()); // Debug logging
         user.setAvatar("avatar_" + (getRandomAvatar()));
         User saved = userRepository.save(user);
         return toDto(saved);
@@ -95,6 +102,36 @@ public class UserServiceImpl implements UserService {
         User updatedUser = userRepository.save(user);
         return toDto(updatedUser);
     }
+
+    @Override
+    public UserDto updateUserProfileWithAvatar(Long id, String name, String phone, MultipartFile avatarFile) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (name != null) user.setName(name);
+        if (phone != null) user.setPhone(phone);
+
+        // Lưu file nếu có upload
+        if (avatarFile != null && !avatarFile.isEmpty()) {
+            try {
+                String uploadDir = "uploads/avatars/";
+                Files.createDirectories(Paths.get(uploadDir));
+
+                String fileName = UUID.randomUUID() + "_" + avatarFile.getOriginalFilename();
+                Path filePath = Paths.get(uploadDir + fileName);
+                Files.write(filePath, avatarFile.getBytes());
+
+                // Lưu đường dẫn vào DB (hoặc chỉ tên file)
+                user.setAvatar("/uploads/avatars/" + fileName);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to save avatar", e);
+            }
+        }
+
+        User updatedUser = userRepository.save(user);
+        return toDto(updatedUser);
+    }
+
 
     @Override
     public void deleteUser(Long id) {

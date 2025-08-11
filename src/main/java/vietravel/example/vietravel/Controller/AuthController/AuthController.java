@@ -54,8 +54,12 @@ public class AuthController {
                             .toList()
             );
         }
+        if (userDto.getRole() == null) {
+            userDto.setRole(UserRole.USER);
+        }
 
         UserDto user = userService.createUser(userDto, passwordEncoder);
+
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
 //        return ResponseEntity.status(HttpStatus.CREATED).body(user);
         return ResponseEntity.ok(Collections.singletonMap("token", token));

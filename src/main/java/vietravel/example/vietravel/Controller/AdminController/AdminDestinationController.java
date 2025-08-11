@@ -13,9 +13,9 @@ import vietravel.example.vietravel.dto.DestinationDto;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/public/destinations")
+@RequestMapping("/api/admin/destinations")
 @RequiredArgsConstructor
-//@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminDestinationController {
 
     private final DestinationService destinationService;

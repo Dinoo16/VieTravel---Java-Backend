@@ -19,19 +19,19 @@ public class DestinationController {
 
     private final DestinationService destinationService;
 
-    // Get all destinations
-//    @GetMapping
-//    public ResponseEntity<List<DestinationDto>> getAllDestinations() {
-//        List<DestinationDto> destinations = destinationService.getAllDestinations();
-//        return ResponseEntity.ok(destinations);
-//    }
+//     Get all destinations
+    @GetMapping
+    public ResponseEntity<List<DestinationDto>> getAllDestinations() {
+        List<DestinationDto> destinations = destinationService.getAllDestinations();
+        return ResponseEntity.ok(destinations);
+    }
 
-    // Get destination by id
-//    @GetMapping("/{id}")
-//    public ResponseEntity<DestinationDto> getDestinationById(@PathVariable Long id) {
-//        DestinationDto destination = destinationService.getDestinationById(id);
-//        return ResponseEntity.ok(destination);
-//    }
+//     Get destination by id
+    @GetMapping("/{id}")
+    public ResponseEntity<DestinationDto> getDestinationById(@PathVariable Long id) {
+        DestinationDto destination = destinationService.getDestinationById(id);
+        return ResponseEntity.ok(destination);
+    }
 
 
 }

@@ -8,8 +8,14 @@ import java.util.Collection;
 import java.util.List;
 
 public class MyUserDetails implements UserDetails {
-    private User user;
-    public MyUserDetails(User user) { this.user = user; }
+    private final User user;
+    private final boolean enabled;
+
+    public MyUserDetails(User user) {
+        this.user = user;
+        this.enabled = true;
+    }
+
     @Override
     public String getUsername() { return user.getEmail(); }
     @Override
@@ -17,7 +23,12 @@ public class MyUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // create & return a List<GrantedAuthority> from roles
-        return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+//        return List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
+        String roleName = user.getRole() != null ? user.getRole().name() : "USER";
+        if (!roleName.startsWith("ROLE_")) {
+            roleName = "ROLE_" + roleName;
+        }
+        return List.of(new SimpleGrantedAuthority(roleName));
     }
 
     @Override

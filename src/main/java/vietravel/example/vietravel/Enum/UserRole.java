@@ -1,7 +1,7 @@
 package vietravel.example.vietravel.Enum;
 
 public enum UserRole {
-    CUSTOMER,
+    USER,
     ADMIN,
     GUIDE
 }

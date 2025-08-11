@@ -2,6 +2,7 @@ package vietravel.example.vietravel.Service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 import vietravel.example.vietravel.dto.UserDto;
 import java.util.List;
 
@@ -16,4 +17,5 @@ public interface UserService {
     UserDto getUserById(Long id);
     List<UserDto> getAllUsers();
     UserDto getUserInfo(String email);
+    UserDto updateUserProfileWithAvatar(Long id, String name, String phone, MultipartFile avatar);
 }
