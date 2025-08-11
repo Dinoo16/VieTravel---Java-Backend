@@ -9,7 +9,7 @@ import java.security.Key;
 @Component
 public class JwtUtil {
     private final String SECRET_KEY = "vietravel_2025_super_secret_key_for_jwt_test!";
-    private final long EXPIRATION = 900000; // 5 minutes
+    private final long EXPIRATION = 1500000;
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());

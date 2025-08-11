@@ -6,6 +6,7 @@ import org.hibernate.Hibernate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import vietravel.example.vietravel.Enum.UserRole;
 import vietravel.example.vietravel.Model.User;
 import vietravel.example.vietravel.Repository.UserRepository;
@@ -120,9 +121,9 @@ public class UserServiceImpl implements UserService {
                 String fileName = UUID.randomUUID() + "_" + avatarFile.getOriginalFilename();
                 Path filePath = Paths.get(uploadDir + fileName);
                 Files.write(filePath, avatarFile.getBytes());
-
+                String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
                 // Lưu đường dẫn vào DB (hoặc chỉ tên file)
-                user.setAvatar("/uploads/avatars/" + fileName);
+                user.setAvatar(baseUrl + "/uploads/avatars/" + fileName);
             } catch (IOException e) {
                 throw new RuntimeException("Failed to save avatar", e);
             }

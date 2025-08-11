@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/api/admin/**", "/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/public/**", "/api/auth/**").permitAll()
+                        .requestMatchers("/api/public/**", "/api/auth/**", "/uploads/**").permitAll()
                         .anyRequest().authenticated()
                 ).formLogin(form -> form.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
