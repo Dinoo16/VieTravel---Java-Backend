@@ -20,6 +20,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto createCategory(CategoryDto dto) {
+        if(categoryRepository.existsByNameIgnoreCase(dto.getName())) {
+            throw new IllegalArgumentException("Category name already exists: " + dto.getName());
+        }
         Category category = Category.builder()
                 .name(dto.getName())
                 .description(dto.getDescription())
@@ -32,6 +35,11 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto updateCategory(Long id, CategoryDto dto) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        if (!category.getName().equalsIgnoreCase(dto.getName()) &&
+                categoryRepository.existsByNameIgnoreCase(dto.getName())) {
+            throw new IllegalArgumentException("Category name already exists: " + dto.getName());
+        }
         category.setName(dto.getName());
         category.setDescription(dto.getDescription());
         category.setImage(dto.getImage());

@@ -42,6 +42,9 @@ public class DestinationServiceImpl implements DestinationService {
     public DestinationDto createDestination(DestinationDto destinationDto) {
         Region region = regionRepository.findById(destinationDto.getRegionId())
                 .orElseThrow(() -> new RuntimeException("Region not found"));
+        if(destinationRepository.existsByNameIgnoreCase(destinationDto.getName())) {
+            throw new IllegalArgumentException("Destination name already exists: " + destinationDto.getName());
+        }
 
         Destination destination = Destination.builder()
                 .name(destinationDto.getName())
@@ -56,10 +59,28 @@ public class DestinationServiceImpl implements DestinationService {
     public DestinationDto updateDestination(Long id, DestinationDto destinationDto) {
         Destination destination = destinationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Destination not found"));
-        destination.setName(destinationDto.getName());
-        destination.setDescription(destinationDto.getDescription());
-        destination.setRegion(Region.builder().regionId(destinationDto.getRegionId()).build());
-        destination.setBackgroundImage(destinationDto.getBackgroundImage());
+
+        if (destinationDto.getName() != null &&
+                !destinationDto.getName().equalsIgnoreCase(destination.getName()) &&
+                destinationRepository.existsByNameIgnoreCase(destinationDto.getName())) {
+            throw new IllegalArgumentException("Destination name already exists: " + destinationDto.getName());
+        }
+
+        if (destinationDto.getName() != null) {
+            destination.setName(destinationDto.getName());
+        }
+        if (destinationDto.getDescription() != null) {
+            destination.setDescription(destinationDto.getDescription());
+        }
+
+        if (destinationDto.getRegionId() != null) {
+            Region region = regionRepository.findById(destinationDto.getRegionId())
+                    .orElseThrow(() -> new RuntimeException("Region not found"));
+            destination.setRegion(region);
+        }
+        if (destinationDto.getBackgroundImage() != null) {
+            destination.setBackgroundImage(destinationDto.getBackgroundImage());
+        }
 
         return toDto(destinationRepository.save(destination));
     }

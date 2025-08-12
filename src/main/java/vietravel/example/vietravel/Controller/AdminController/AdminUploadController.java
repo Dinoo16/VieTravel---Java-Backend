@@ -41,7 +41,7 @@ public class AdminUploadController {
     }
 
     // Get all images metadata (no binary data)
-    @GetMapping
+    @GetMapping({"", "/"})
     public ResponseEntity<List<ImageFile>> getAllImages() {
         return ResponseEntity.ok(imageFileService.getAllImages());
     }
