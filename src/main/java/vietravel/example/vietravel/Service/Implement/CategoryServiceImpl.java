@@ -36,13 +36,21 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
-        if (!category.getName().equalsIgnoreCase(dto.getName()) &&
+        if (dto.getName() != null &&
+                !dto.getName().equalsIgnoreCase(category.getName()) &&
                 categoryRepository.existsByNameIgnoreCase(dto.getName())) {
             throw new IllegalArgumentException("Category name already exists: " + dto.getName());
         }
-        category.setName(dto.getName());
-        category.setDescription(dto.getDescription());
-        category.setImage(dto.getImage());
+
+        if (dto.getName() != null) {
+            category.setName(dto.getName());
+        }
+        if (dto.getDescription() != null) {
+            category.setDescription(dto.getDescription());
+        }
+        if (dto.getImage() != null) {
+            category.setImage(dto.getImage());
+        }
         return toDto(categoryRepository.save(category));
     }
 

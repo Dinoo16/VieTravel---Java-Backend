@@ -50,7 +50,8 @@ public class DestinationServiceImpl implements DestinationService {
                 .name(destinationDto.getName())
                 .description(destinationDto.getDescription())
                 .region(region)
-                .backgroundImage(destinationDto.getBackgroundImage()).build();
+                .backgroundImage(destinationDto.getBackgroundImage())
+                .build();
         return toDto(destinationRepository.save(destination));
 
     }
