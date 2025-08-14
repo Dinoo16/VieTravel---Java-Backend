@@ -8,11 +8,12 @@ import java.util.List;
 public interface TourPlanService {
 
     List<TourPlanDto> getAllTourPlan();
-    TourPlanDto createTourPlan(TourPlanDto dto);
-    TourPlanDto updateTourPlan(Long id, TourPlanDto dto);
 
     void deleteTourPlan(Long id);
 
+    List<TourPlanDto> createMultipleTourPlans(List<TourPlanDto> dtos);
+
+    List<TourPlanDto> updateMultipleTourPlans(List<TourPlanDto> dtos);
 
 
 
