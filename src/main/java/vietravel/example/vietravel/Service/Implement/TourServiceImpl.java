@@ -1,5 +1,5 @@
 package vietravel.example.vietravel.Service.Implement;
-
+import lombok.extern.slf4j.Slf4j;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,10 +9,7 @@ import vietravel.example.vietravel.Repository.*;
 import vietravel.example.vietravel.Service.TourService;
 import vietravel.example.vietravel.dto.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,6 +73,7 @@ public class TourServiceImpl implements TourService {
     }
 
     public Tour toEntity(TourDto dto) {
+        System.out.println("Converting TourDto to Entity: " + dto);
         // Fetch Destination
         Destination destination = destinationRepository.findByName(dto.getDestinationName())
                 .orElseThrow(() -> new RuntimeException("Destination not found"));
@@ -145,11 +143,32 @@ public class TourServiceImpl implements TourService {
     }
 
 
+//    @Override
+//    public TourDto createTour(TourDto tourDto) {
+//        Tour tour = toEntity(tourDto);
+//        return toDto(tourRepository.save(tour));
+//
+//    }
+
     @Override
     public TourDto createTour(TourDto tourDto) {
-        Tour tour = toEntity(tourDto);
-        return toDto(tourRepository.save(tour));
+        try {
+            Tour tour = toEntity(tourDto);
+            Tour savedTour = tourRepository.save(tour);
+            return toDto(savedTour);
+        } catch (Exception e) {
+            // Log the error for debugging
+            System.err.println("Error creating tour: " + e.getMessage());
 
+            // Check for specific exceptions
+            if (e.getCause() != null && e.getCause().getMessage().contains("Destination not found")) {
+                throw new RuntimeException("Destination not found: " + tourDto.getDestinationName());
+            } else if (e.getCause() != null && e.getCause().getMessage().contains("categories not found")) {
+                throw new RuntimeException("One or more categories not found: " + tourDto.getCategoryNames());
+            } else {
+                throw new RuntimeException("Failed to create tour: " + e.getMessage());
+            }
+        }
     }
 
     @Override
@@ -172,19 +191,35 @@ public class TourServiceImpl implements TourService {
                     .orElseThrow(() -> new RuntimeException("Guide not found"));
         }
 
-        // Clear existing tourPlans and add new ones
-        tour.getTourPlans().clear();
         if (tourDto.getTourPlans() != null) {
-            tourDto.getTourPlans().forEach(planDto -> {
-                TourPlan plan = TourPlan.builder()
-                        .day(planDto.getDay())
-                        .title(planDto.getTitle())
-                        .content(planDto.getContent())
-                        .tour(tour) // Set the parent tour
-                        .build();
-                tour.getTourPlans().add(plan); // ✅ Adds to the existing collection
-            });
+            Map<Integer, TourPlan> existingPlans = tour.getTourPlans().stream()
+                    .collect(Collectors.toMap(TourPlan::getDay, p -> p));
+
+            Set<Integer> requestDays = tourDto.getTourPlans().stream()
+                    .map(TourPlanDto::getDay)
+                    .collect(Collectors.toSet());
+
+            // Xóa plan không còn trong request
+            tour.getTourPlans().removeIf(plan -> !requestDays.contains(plan.getDay()));
+
+            // Thêm hoặc cập nhật
+            for (TourPlanDto planDto : tourDto.getTourPlans()) {
+                TourPlan plan = existingPlans.get(planDto.getDay());
+                if (plan != null) {
+                    plan.setTitle(planDto.getTitle());
+                    plan.setContent(planDto.getContent());
+                } else {
+                    tour.getTourPlans().add(TourPlan.builder()
+                            .day(planDto.getDay())
+                            .title(planDto.getTitle())
+                            .content(planDto.getContent())
+                            .tour(tour)
+                            .build());
+                }
+            }
         }
+
+
 
         // Cập nhật các trường
         tour.setTitle(tourDto.getTitle());
