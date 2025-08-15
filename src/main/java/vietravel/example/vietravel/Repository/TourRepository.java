@@ -1,5 +1,6 @@
 package vietravel.example.vietravel.Repository;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import vietravel.example.vietravel.Model.Tour;
@@ -12,5 +13,8 @@ import java.util.Optional;
 public interface TourRepository extends JpaRepository<Tour, Long> {
     // Find tours by name containing a keyword (for search)
 //    List<Tour> findByNameContainingIgnoreCase(String keyword);
+    List<Tour> findAll(Sort sort);
+
+
 
 }

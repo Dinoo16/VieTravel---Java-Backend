@@ -19,5 +19,7 @@ public interface TourService {
     TourDto getTourById(Long id);
 
     List<TourPlanDto> getTourPlansByTourId(Long id);
+    List<TourDto> getAllToursSorted(String sortBy);
+
 
 }

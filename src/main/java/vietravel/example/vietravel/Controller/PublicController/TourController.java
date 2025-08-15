@@ -31,5 +31,11 @@ public class TourController {
         return ResponseEntity.ok(tour);
     }
 
+    @GetMapping("/sorted")
+    public ResponseEntity<List<TourDto>> getSortedTours(
+            @RequestParam(defaultValue = "top") String sortBy) {
+        return ResponseEntity.ok(tourService.getAllToursSorted(sortBy));
+    }
+
 
 }
