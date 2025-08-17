@@ -39,8 +39,8 @@ public class AdminTourController {
 
     // Get all tours
     @GetMapping
-    public ResponseEntity<List<TourDto>> getAllTours() {
-        List<TourDto> tours = tourService.getAllTour();
+    public ResponseEntity<List<TourDto>> getAllTours(@RequestParam(required = false, defaultValue = "top") String sortBy) {
+        List<TourDto> tours = tourService.getAllTour(sortBy);
         return ResponseEntity.ok(tours);
     }
 

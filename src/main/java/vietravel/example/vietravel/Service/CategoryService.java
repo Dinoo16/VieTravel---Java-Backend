@@ -1,6 +1,7 @@
 package vietravel.example.vietravel.Service;
 
 import vietravel.example.vietravel.dto.CategoryDto;
+import vietravel.example.vietravel.dto.TourDto;
 
 import java.util.List;
 
@@ -15,4 +16,6 @@ public interface CategoryService {
     CategoryDto getCategoryById(Long id);
 
     List<CategoryDto> getAllCategories();
+
+    List<TourDto> getToursByCategoryId(Long categoryId, String sortBy);
 }

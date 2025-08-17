@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import vietravel.example.vietravel.Service.DestinationService;
 import vietravel.example.vietravel.dto.DestinationDto;
+import vietravel.example.vietravel.dto.TourDto;
 
 import java.util.List;
 
@@ -33,5 +34,9 @@ public class DestinationController {
         return ResponseEntity.ok(destination);
     }
 
-
+    // Get all tours by destination id
+    @GetMapping("/{id}/tours")
+    public ResponseEntity<List<TourDto>> getToursByDestinationId(@PathVariable Long id, @RequestParam(required = false, defaultValue = "top") String sortBy ) {
+        return ResponseEntity.ok(destinationService.getToursByDestinationId(id, sortBy));
+    }
 }

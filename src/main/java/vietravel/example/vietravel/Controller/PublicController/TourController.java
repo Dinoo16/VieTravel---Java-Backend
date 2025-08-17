@@ -19,8 +19,8 @@ public class TourController {
 
     // Get all tours
     @GetMapping
-    public ResponseEntity<List<TourDto>> getAllTours() {
-        List<TourDto> tours = tourService.getAllTour();
+    public ResponseEntity<List<TourDto>> getAllTours(@RequestParam(required = false, defaultValue = "top") String sortBy) {
+        List<TourDto> tours = tourService.getAllTour(sortBy);
         return ResponseEntity.ok(tours);
     }
 
@@ -31,11 +31,19 @@ public class TourController {
         return ResponseEntity.ok(tour);
     }
 
-    @GetMapping("/sorted")
-    public ResponseEntity<List<TourDto>> getSortedTours(
-            @RequestParam(defaultValue = "top") String sortBy) {
-        return ResponseEntity.ok(tourService.getAllToursSorted(sortBy));
+    @GetMapping("/search")
+    public ResponseEntity<List<TourDto>> searchTours(
+            @RequestParam(required = false) String destination,
+            @RequestParam(required = false) Integer days,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice
+    ) {
+        return ResponseEntity.ok(
+                tourService.searchTours(destination, days, category, minPrice, maxPrice)
+        );
     }
+
 
 
 }

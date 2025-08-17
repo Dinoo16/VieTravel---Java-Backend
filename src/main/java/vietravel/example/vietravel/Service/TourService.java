@@ -14,12 +14,13 @@ public interface TourService {
 
     void deleteTour(Long id);
 
-    List<TourDto> getAllTour();
+    List<TourDto> getAllTour(String sortBy);
 
     TourDto getTourById(Long id);
 
     List<TourPlanDto> getTourPlansByTourId(Long id);
-    List<TourDto> getAllToursSorted(String sortBy);
 
+    List<TourDto> searchTours(String destination, Integer days, String category,
+                              Double minPrice, Double maxPrice);
 
 }

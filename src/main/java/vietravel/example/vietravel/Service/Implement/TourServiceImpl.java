@@ -9,6 +9,7 @@ import vietravel.example.vietravel.Model.*;
 import vietravel.example.vietravel.Repository.*;
 import vietravel.example.vietravel.Service.TourService;
 import vietravel.example.vietravel.dto.*;
+import vietravel.example.vietravel.util.TourSortUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -251,8 +252,11 @@ public class TourServiceImpl implements TourService {
 
 
     @Override
-    public List<TourDto> getAllTour() {
-        return tourRepository.findAll()
+    public List<TourDto> getAllTour(String sortBy) {
+        List<Tour> tours = tourRepository.findAll();
+        List<Tour> sortedTours = TourSortUtil.sortTours(tours, sortBy);
+
+        return sortedTours
                 .stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
@@ -284,39 +288,48 @@ public class TourServiceImpl implements TourService {
         return dto;
     }
 
-    @Override
-    public List<TourDto> getAllToursSorted(String sortBy) {
-        List<Tour> tours = tourRepository.findAll();
-
-        switch (sortBy.toLowerCase()) {
-            case "top":
-                // Sắp xếp số lượng tourSchedules giảm dần
-                tours.sort((t1, t2) -> Integer.compare(
-                        t2.getTourSchedules() != null ? t2.getTourSchedules().size() : 0,
-                        t1.getTourSchedules() != null ? t1.getTourSchedules().size() : 0
-                ));
-                break;
-
-            case "lowest":
-                // Sắp xếp price tăng dần
-                tours.sort((t1, t2) -> Double.compare(
-                        t1.getPrice() != null ? t1.getPrice() : 0.0,
-                        t2.getPrice() != null ? t2.getPrice() : 0.0
-                ));
-                break;
-
-            case "reviewed":
-                // TODO: sẽ implement sau dựa trên review
-                break;
-
-            default:
-                throw new RuntimeException("Invalid sort field: " + sortBy);
-        }
-
-        return tours.stream()
+    // Search tours
+    public List<TourDto> searchTours(String destination, Integer days, String category,
+                                     Double minPrice, Double maxPrice) {
+        return tourRepository.searchTours(destination, days, category, minPrice, maxPrice)
+                .stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
+
+//    @Override
+//    public List<TourDto> getAllToursSorted(String sortBy) {
+//        List<Tour> tours = tourRepository.findAll();
+//
+//        switch (sortBy.toLowerCase()) {
+//            case "top":
+//                // Sắp xếp số lượng tourSchedules giảm dần
+//                tours.sort((t1, t2) -> Integer.compare(
+//                        t2.getTourSchedules() != null ? t2.getTourSchedules().size() : 0,
+//                        t1.getTourSchedules() != null ? t1.getTourSchedules().size() : 0
+//                ));
+//                break;
+//
+//            case "lowest":
+//                // Sắp xếp price tăng dần
+//                tours.sort((t1, t2) -> Double.compare(
+//                        t1.getPrice() != null ? t1.getPrice() : 0.0,
+//                        t2.getPrice() != null ? t2.getPrice() : 0.0
+//                ));
+//                break;
+//
+//            case "reviewed":
+//                // TODO: sẽ implement sau dựa trên review
+//                break;
+//
+//            default:
+//                throw new RuntimeException("Invalid sort field: " + sortBy);
+//        }
+//
+//        return tours.stream()
+//                .map(this::toDto)
+//                .collect(Collectors.toList());
+//    }
 
 
 

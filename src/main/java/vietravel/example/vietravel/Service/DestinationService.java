@@ -3,6 +3,7 @@ package vietravel.example.vietravel.Service;
 
 import vietravel.example.vietravel.Model.Destination;
 import vietravel.example.vietravel.dto.DestinationDto;
+import vietravel.example.vietravel.dto.TourDto;
 
 import java.util.List;
 
@@ -17,6 +18,8 @@ public interface DestinationService {
     List<DestinationDto> getAllDestinations();
 
     DestinationDto getDestinationById(Long id);
+
+    List<TourDto> getToursByDestinationId(Long id, String sortBy);
 
 
 }

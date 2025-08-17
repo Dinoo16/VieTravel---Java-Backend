@@ -3,6 +3,7 @@ package vietravel.example.vietravel.Service.Implement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import vietravel.example.vietravel.Model.Category;
 import vietravel.example.vietravel.Model.Destination;
 import vietravel.example.vietravel.Model.Region;
 import vietravel.example.vietravel.Model.Tour;
@@ -10,7 +11,12 @@ import vietravel.example.vietravel.Repository.DestinationRepository;
 import vietravel.example.vietravel.Repository.RegionRepository;
 import vietravel.example.vietravel.Service.DestinationService;
 import vietravel.example.vietravel.dto.DestinationDto;
+import vietravel.example.vietravel.dto.ReviewDto;
+import vietravel.example.vietravel.dto.TourDto;
+import vietravel.example.vietravel.dto.TourPlanDto;
+import vietravel.example.vietravel.util.TourSortUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -108,5 +114,70 @@ public class DestinationServiceImpl implements DestinationService {
 
         return toDto(destination);
     }
+
+    // Get all tours by destination id
+    @Override
+    public List<TourDto> getToursByDestinationId(Long id, String sortBy) {
+        Destination destination = destinationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Destination not found"));
+
+        // Sort tour
+        List<Tour> sortedTours = TourSortUtil.sortTours(destination.getTours(), sortBy);
+
+        // Convert list tours -> tourDto
+        return sortedTours.stream()
+                .map(this::toTourDto)
+                .collect(Collectors.toList());
+    }
+    private TourDto toTourDto(Tour tour) {
+        TourDto dto = new TourDto();
+        dto.setId(tour.getTourId());
+        dto.setTitle(tour.getTitle());
+        dto.setDestinationName(tour.getDestination().getName());
+        dto.setDeparture(tour.getDeparture());
+        dto.setDepartureTime(tour.getDepartureTime());
+        dto.setReturnTime(tour.getReturnTime());
+        dto.setCategoryNames(tour.getCategories().stream().map(Category::getName).collect(Collectors.toList()));
+        dto.setGuideName(tour.getGuide() != null ? tour.getGuide().getName() : null);
+        dto.setDuration(tour.getDuration() + (tour.getDuration() == 1 ? " day" : " days"));
+        dto.setPrice(tour.getPrice());
+        dto.setDescription(tour.getDescription());
+        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
+        dto.setBackgroundImage(baseUrl + tour.getBackgroundImage());
+        dto.setGallery(tour.getGallery());
+        dto.setTourPlans(
+                tour.getTourPlans() != null ?
+                        tour.getTourPlans().stream().map(plan -> {
+                            TourPlanDto planDto = new TourPlanDto();
+                            planDto.setId(plan.getId());
+                            planDto.setTourId(plan.getTour().getTourId());
+                            planDto.setDay(plan.getDay());
+                            planDto.setTitle(plan.getTitle());
+                            planDto.setContent(plan.getContent());
+                            return planDto;
+                        }).collect(Collectors.toList())
+                        : new ArrayList<>()
+        );
+        if (tour.getReviews() != null) {
+            dto.setReviews(
+                    tour.getReviews().stream()
+                            .map(review -> {
+                                ReviewDto reviewDto = new ReviewDto();
+                                reviewDto.setId(review.getId());
+                                reviewDto.setUserId(review.getUser().getUserId());
+                                reviewDto.setTourId(review.getTour().getTourId());
+                                reviewDto.setRating(review.getRating());
+                                reviewDto.setComment(review.getComment());
+                                return reviewDto;
+                            })
+                            .collect(Collectors.toList())
+            );
+        } else {
+            dto.setReviews(new ArrayList<>());
+        }
+
+        return dto;
+    }
+
 
 }
