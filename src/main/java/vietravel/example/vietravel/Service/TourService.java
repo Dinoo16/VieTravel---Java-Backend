@@ -21,6 +21,6 @@ public interface TourService {
     List<TourPlanDto> getTourPlansByTourId(Long id);
 
     List<TourDto> searchTours(String destination, Integer days, String category,
-                              Double minPrice, Double maxPrice);
+                              Double minPrice, Double maxPrice, String sortBy);
 
 }

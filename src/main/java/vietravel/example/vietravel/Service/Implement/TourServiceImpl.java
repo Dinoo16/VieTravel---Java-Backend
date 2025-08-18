@@ -290,12 +290,16 @@ public class TourServiceImpl implements TourService {
 
     // Search tours
     public List<TourDto> searchTours(String destination, Integer days, String category,
-                                     Double minPrice, Double maxPrice) {
-        return tourRepository.searchTours(destination, days, category, minPrice, maxPrice)
+                                     Double minPrice, Double maxPrice, String sortBy) {
+        List<Tour> tours = tourRepository.searchTours(destination, days, category, minPrice, maxPrice);
+        List<Tour> sortedTours = TourSortUtil.sortTours(tours, sortBy);
+        return sortedTours
                 .stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
+
     }
+
 
 //    @Override
 //    public List<TourDto> getAllToursSorted(String sortBy) {

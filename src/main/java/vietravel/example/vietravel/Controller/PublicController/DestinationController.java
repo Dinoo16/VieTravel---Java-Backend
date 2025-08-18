@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import vietravel.example.vietravel.Model.Destination;
 import vietravel.example.vietravel.Service.DestinationService;
 import vietravel.example.vietravel.dto.DestinationDto;
 import vietravel.example.vietravel.dto.TourDto;
@@ -38,5 +39,12 @@ public class DestinationController {
     @GetMapping("/{id}/tours")
     public ResponseEntity<List<TourDto>> getToursByDestinationId(@PathVariable Long id, @RequestParam(required = false, defaultValue = "top") String sortBy ) {
         return ResponseEntity.ok(destinationService.getToursByDestinationId(id, sortBy));
+    }
+
+    // Top 5 popular destinations
+    @GetMapping("/popular")
+    public ResponseEntity<List<DestinationDto>> getPopularDestinations(
+            @RequestParam(defaultValue = "6") int limit) {
+        return ResponseEntity.ok(destinationService.getPopularDestinations(limit));
     }
 }

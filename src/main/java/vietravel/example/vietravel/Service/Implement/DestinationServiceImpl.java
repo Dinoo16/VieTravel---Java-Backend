@@ -1,6 +1,7 @@
 package vietravel.example.vietravel.Service.Implement;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import vietravel.example.vietravel.Model.Category;
@@ -113,6 +114,14 @@ public class DestinationServiceImpl implements DestinationService {
                 orElseThrow(() -> new RuntimeException("Destination not found"));
 
         return toDto(destination);
+    }
+
+    // Get top 5 popular destinations
+    public List<DestinationDto> getPopularDestinations(int limit) {
+        return destinationRepository.findPopularDestinations(PageRequest.of(0, limit))
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     // Get all tours by destination id

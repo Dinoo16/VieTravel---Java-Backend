@@ -37,10 +37,11 @@ public class TourController {
             @RequestParam(required = false) Integer days,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Double minPrice,
-            @RequestParam(required = false) Double maxPrice
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false, defaultValue = "top") String sortBy
     ) {
         return ResponseEntity.ok(
-                tourService.searchTours(destination, days, category, minPrice, maxPrice)
+                tourService.searchTours(destination, days, category, minPrice, maxPrice, sortBy)
         );
     }
 

@@ -21,5 +21,7 @@ public interface DestinationService {
 
     List<TourDto> getToursByDestinationId(Long id, String sortBy);
 
+    List<DestinationDto> getPopularDestinations(int limit);
+
 
 }
