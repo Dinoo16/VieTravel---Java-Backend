@@ -16,6 +16,10 @@ public class MyUserDetails implements UserDetails {
         this.enabled = true;
     }
 
+    public Long getId() {
+        return user.getUserId();
+    }
+
     @Override
     public String getUsername() { return user.getEmail(); }
     @Override

@@ -9,13 +9,29 @@ import java.time.LocalDate;
 public class BookingDto {
     private Long id;
 
-    @NotNull(message = "User ID is required")
-    private Long userId;
-
     private Long tourId;
+
+    private Long userId;
 
     @NotNull(message = "Booking date is required")
     private LocalDate date;
+
+    @NotNull(message = "Tour schedule ID is required")
+    private Long tourScheduleId;
+
+    @NotBlank(message = "Contact name is required")
+    private String contactName;
+
+    @NotBlank(message = "Contact email is required")
+    @Email(message = "Invalid email format")
+    private String contactEmail;
+
+    @NotBlank(message = "Contact phone is required")
+    @Pattern(
+            regexp = "^(\\+\\d{1,3}[- ]?)?\\d{9,15}$",
+            message = "Invalid phone number"
+    )
+    private String contactPhone;
 
     private BookingStatus status;
 
@@ -23,7 +39,8 @@ public class BookingDto {
     @Min(value = 1, message = "At least one person is required")
     private Integer numberOfPeople;
 
-    @NotNull(message = "Total amount is required")
-    @Positive(message = "Total amount must be positive")
+    @Null(message = "Total amount is calculated automatically")
     private Double totalAmount;
+
+    private String message;
 }

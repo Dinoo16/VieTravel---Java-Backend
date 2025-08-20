@@ -5,9 +5,12 @@ import org.springframework.stereotype.Repository;
 import vietravel.example.vietravel.Model.Booking;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    List<Booking> findByUserUserId(Long userId);
-    List<Booking> findByTourScheduleId(Long tourScheduleId);
+
+    Optional<Booking> findByBookingIdAndUser_Email(Long bookingId, String email);
+
+    List<Booking> findByUser_Email(String email);
 }

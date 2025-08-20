@@ -25,6 +25,12 @@ public class Booking {
     @JoinColumn(name = "tour_schedule_id")
     private TourSchedule tourSchedule;
 
+    // Contact information
+    private String contactName;
+    private String contactEmail;
+    private String contactPhone;
+
+    // Ngày khởi hành
     private LocalDate date;
 
     @Enumerated(EnumType.STRING)
@@ -33,5 +39,7 @@ public class Booking {
     private int numberOfPeople;
 
     private double totalAmount;
+
+    private String message;
 }
 
