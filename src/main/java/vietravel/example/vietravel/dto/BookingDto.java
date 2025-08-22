@@ -4,7 +4,10 @@ import lombok.Data;
 import vietravel.example.vietravel.Enum.BookingStatus;
 import vietravel.example.vietravel.Model.TourSchedule;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Data
 public class BookingDto {
     private Long id;
@@ -39,8 +42,18 @@ public class BookingDto {
     @Min(value = 1, message = "At least one person is required")
     private Integer numberOfPeople;
 
+    private String currency;
+
+
     @Null(message = "Total amount is calculated automatically")
-    private Double totalAmount;
+    private BigDecimal totalAmount;
+
 
     private String message;
+
+    private String paypalOrderId;  // mapping với order PayPal
+    private String paypalCaptureId;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

@@ -6,7 +6,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import vietravel.example.vietravel.Model.Category;
 import vietravel.example.vietravel.Model.Tour;
 import vietravel.example.vietravel.Repository.CategoryRepository;
-import vietravel.example.vietravel.Service.CategoryService;
+import vietravel.example.vietravel.Service.ServiceInterface.CategoryService;
 import vietravel.example.vietravel.dto.CategoryDto;
 import vietravel.example.vietravel.dto.ReviewDto;
 import vietravel.example.vietravel.dto.TourDto;

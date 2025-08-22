@@ -1,21 +1,16 @@
 package vietravel.example.vietravel.Controller.AuthController;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import vietravel.example.vietravel.Config.JwtAuthenticationFilter;
 import vietravel.example.vietravel.Config.JwtUtil;
 import vietravel.example.vietravel.Enum.UserRole;
-import vietravel.example.vietravel.Model.User;
 import vietravel.example.vietravel.Repository.UserRepository;
-import vietravel.example.vietravel.Service.Implement.UserServiceImpl;
-import vietravel.example.vietravel.Service.UserService;
+import vietravel.example.vietravel.Service.ServiceInterface.UserService;
 import vietravel.example.vietravel.dto.UserDto;
 import org.springframework.validation.BindingResult;
 

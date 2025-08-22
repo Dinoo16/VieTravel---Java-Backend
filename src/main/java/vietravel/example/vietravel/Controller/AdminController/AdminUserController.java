@@ -4,9 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import vietravel.example.vietravel.Service.UserService;
+import vietravel.example.vietravel.Service.ServiceInterface.UserService;
 import vietravel.example.vietravel.dto.UserDto;
 
 import java.util.List;

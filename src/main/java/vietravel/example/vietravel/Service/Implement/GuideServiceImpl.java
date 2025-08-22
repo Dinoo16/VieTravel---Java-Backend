@@ -10,7 +10,7 @@ import vietravel.example.vietravel.Model.User;
 import vietravel.example.vietravel.Repository.GuideRepository;
 import vietravel.example.vietravel.Repository.TourScheduleRepository;
 import vietravel.example.vietravel.Repository.UserRepository;
-import vietravel.example.vietravel.Service.GuideService;
+import vietravel.example.vietravel.Service.ServiceInterface.GuideService;
 import vietravel.example.vietravel.dto.GuideDto;
 
 import java.util.List;

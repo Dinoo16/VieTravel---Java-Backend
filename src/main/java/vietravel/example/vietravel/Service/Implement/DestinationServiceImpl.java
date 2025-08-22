@@ -10,7 +10,7 @@ import vietravel.example.vietravel.Model.Region;
 import vietravel.example.vietravel.Model.Tour;
 import vietravel.example.vietravel.Repository.DestinationRepository;
 import vietravel.example.vietravel.Repository.RegionRepository;
-import vietravel.example.vietravel.Service.DestinationService;
+import vietravel.example.vietravel.Service.ServiceInterface.DestinationService;
 import vietravel.example.vietravel.dto.DestinationDto;
 import vietravel.example.vietravel.dto.ReviewDto;
 import vietravel.example.vietravel.dto.TourDto;

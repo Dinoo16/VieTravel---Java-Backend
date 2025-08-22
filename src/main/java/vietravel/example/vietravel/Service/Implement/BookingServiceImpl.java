@@ -12,12 +12,13 @@ import vietravel.example.vietravel.Repository.BookingRepository;
 import vietravel.example.vietravel.Repository.TourRepository;
 import vietravel.example.vietravel.Repository.TourScheduleRepository;
 import vietravel.example.vietravel.Repository.UserRepository;
-import vietravel.example.vietravel.Service.BookingService;
+import vietravel.example.vietravel.Service.ServiceInterface.BookingService;
 import vietravel.example.vietravel.dto.BookingDto;
 import vietravel.example.vietravel.dto.ReviewDto;
 import vietravel.example.vietravel.dto.TourDto;
 import vietravel.example.vietravel.dto.TourPlanDto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -82,7 +83,7 @@ public class BookingServiceImpl implements BookingService {
         LocalDateTime returnDateTime = departureDateTime.plusDays(tour.getDuration());
 
         // 6. Tính totalAmout
-        double totalAmount = tour.getPrice() * bookingDto.getNumberOfPeople();
+        BigDecimal totalAmount = BigDecimal.valueOf(tour.getPrice() * bookingDto.getNumberOfPeople());
 
         // 7. Tạo TourSchedule mới (tạm không có hướng dẫn viên)
         TourSchedule newSchedule = TourSchedule.builder()
@@ -103,14 +104,48 @@ public class BookingServiceImpl implements BookingService {
                 .date(bookingDto.getDate())
                 .status(BookingStatus.PENDING)
                 .numberOfPeople(bookingDto.getNumberOfPeople())
+                .currency(bookingDto.getCurrency())
                 .totalAmount(totalAmount)
                 .message(bookingDto.getMessage())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
         Booking saved = bookingRepository.save(booking);
 
         // 9. Trả về DTO
         return toDto(saved);
+    }
+
+    // Lưu orderId khi tạo PayPal order
+    @Override
+    public void savePendingOrder(Long bookingId, String orderId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        booking.setPaypalOrderId(orderId);
+        booking.setUpdatedAt(LocalDateTime.now());
+        bookingRepository.save(booking);
+    }
+
+    // Cập nhật PAID khi capture thành công
+    @Override
+    public void markPaid(String orderId, String captureId) {
+        Booking booking = bookingRepository.findByPaypalOrderId(orderId)
+                .orElseThrow(() -> new RuntimeException("Booking not found by orderId"));
+        booking.setStatus(BookingStatus.PAID);
+        booking.setPaypalCaptureId(captureId);
+        booking.setUpdatedAt(LocalDateTime.now());
+        bookingRepository.save(booking);
+    }
+
+    // Cập nhật FAILED
+    @Override
+    public void markFailed(String orderId) {
+        Booking booking = bookingRepository.findByPaypalOrderId(orderId)
+                .orElseThrow(() -> new RuntimeException("Booking not found by orderId"));
+        booking.setStatus(BookingStatus.FAILED);
+        booking.setUpdatedAt(LocalDateTime.now());
+        bookingRepository.save(booking);
     }
 
     @Override

@@ -1,12 +1,10 @@
 package vietravel.example.vietravel.Controller.AdminController;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import vietravel.example.vietravel.Model.Tour;
-import vietravel.example.vietravel.Service.TourPlanService;
+import vietravel.example.vietravel.Service.ServiceInterface.TourPlanService;
 import vietravel.example.vietravel.dto.TourPlanDto;
 
 import java.util.List;

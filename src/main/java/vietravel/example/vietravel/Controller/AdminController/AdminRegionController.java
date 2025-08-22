@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import vietravel.example.vietravel.Service.RegionService;
+import vietravel.example.vietravel.Service.ServiceInterface.RegionService;
 import vietravel.example.vietravel.dto.RegionDto;
 
 import java.util.List;

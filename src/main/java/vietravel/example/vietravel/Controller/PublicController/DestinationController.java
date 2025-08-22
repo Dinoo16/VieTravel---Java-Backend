@@ -2,13 +2,9 @@ package vietravel.example.vietravel.Controller.PublicController;
 
 
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import vietravel.example.vietravel.Model.Destination;
-import vietravel.example.vietravel.Service.DestinationService;
+import vietravel.example.vietravel.Service.ServiceInterface.DestinationService;
 import vietravel.example.vietravel.dto.DestinationDto;
 import vietravel.example.vietravel.dto.TourDto;
 

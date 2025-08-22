@@ -1,13 +1,11 @@
 package vietravel.example.vietravel.Service.Implement;
-import lombok.extern.slf4j.Slf4j;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import vietravel.example.vietravel.Model.*;
 import vietravel.example.vietravel.Repository.*;
-import vietravel.example.vietravel.Service.TourService;
+import vietravel.example.vietravel.Service.ServiceInterface.TourService;
 import vietravel.example.vietravel.dto.*;
 import vietravel.example.vietravel.util.TourSortUtil;
 

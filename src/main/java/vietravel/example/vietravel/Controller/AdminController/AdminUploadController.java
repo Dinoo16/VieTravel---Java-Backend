@@ -4,11 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vietravel.example.vietravel.Model.ImageFile;
-import vietravel.example.vietravel.Service.Implement.ImageFileService;
+import vietravel.example.vietravel.Service.ImageFileService;
 
 import java.io.IOException;
 import java.util.List;

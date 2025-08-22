@@ -2,7 +2,6 @@ package vietravel.example.vietravel.Service.Implement;
 
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,7 +9,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import vietravel.example.vietravel.Enum.UserRole;
 import vietravel.example.vietravel.Model.User;
 import vietravel.example.vietravel.Repository.UserRepository;
-import vietravel.example.vietravel.Service.UserService;
+import vietravel.example.vietravel.Service.ServiceInterface.UserService;
 import vietravel.example.vietravel.dto.UserDto;
 
 import java.io.IOException;

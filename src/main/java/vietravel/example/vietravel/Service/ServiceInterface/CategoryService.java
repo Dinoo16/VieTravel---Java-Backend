@@ -1,4 +1,4 @@
-package vietravel.example.vietravel.Service;
+package vietravel.example.vietravel.Service.ServiceInterface;
 
 import vietravel.example.vietravel.dto.CategoryDto;
 import vietravel.example.vietravel.dto.TourDto;

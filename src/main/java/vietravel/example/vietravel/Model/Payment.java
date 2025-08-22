@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import vietravel.example.vietravel.Enum.PaymentStatus;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,12 +23,20 @@ public class Payment {
     @JoinColumn(name = "booking_id", referencedColumnName = "bookingId")
     private Booking booking;
 
-    private double amount;
 
-    private String paymentMethod; // e.g., "Credit Card", "Paypal", "ApplePay"
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    private BigDecimal amount;
+    private String currency;
+
+
+    private String providerTransactionId;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

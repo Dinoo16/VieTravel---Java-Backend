@@ -4,10 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vietravel.example.vietravel.Model.Destination;
 import vietravel.example.vietravel.Model.Region;
-import vietravel.example.vietravel.Model.Tour;
 import vietravel.example.vietravel.Repository.RegionRepository;
-import vietravel.example.vietravel.Service.RegionService;
-import vietravel.example.vietravel.dto.DestinationDto;
+import vietravel.example.vietravel.Service.ServiceInterface.RegionService;
 import vietravel.example.vietravel.dto.RegionDto;
 
 import java.util.List;

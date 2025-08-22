@@ -8,7 +8,7 @@ import vietravel.example.vietravel.Model.TourSchedule;
 import vietravel.example.vietravel.Repository.GuideRepository;
 import vietravel.example.vietravel.Repository.TourRepository;
 import vietravel.example.vietravel.Repository.TourScheduleRepository;
-import vietravel.example.vietravel.Service.TourScheduleService;
+import vietravel.example.vietravel.Service.ServiceInterface.TourScheduleService;
 import vietravel.example.vietravel.dto.TourScheduleDto;
 
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package vietravel.example.vietravel.Service.Implement;
+package vietravel.example.vietravel.Service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

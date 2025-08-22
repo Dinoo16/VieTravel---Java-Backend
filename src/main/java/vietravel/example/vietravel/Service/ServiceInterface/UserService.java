@@ -1,4 +1,4 @@
-package vietravel.example.vietravel.Service;
+package vietravel.example.vietravel.Service.ServiceInterface;
 
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;

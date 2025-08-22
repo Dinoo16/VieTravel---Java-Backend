@@ -1,13 +1,11 @@
 package vietravel.example.vietravel.Controller.UserController;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import vietravel.example.vietravel.Service.UserService;
+import vietravel.example.vietravel.Service.ServiceInterface.UserService;
 import vietravel.example.vietravel.dto.UserDto;
 
 @RestController

@@ -1,4 +1,4 @@
-package vietravel.example.vietravel.Service.Implement;
+package vietravel.example.vietravel.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

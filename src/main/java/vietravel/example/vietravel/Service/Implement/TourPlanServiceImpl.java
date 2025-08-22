@@ -6,12 +6,11 @@ import vietravel.example.vietravel.Model.Tour;
 import vietravel.example.vietravel.Model.TourPlan;
 import vietravel.example.vietravel.Repository.TourPlanRepository;
 import vietravel.example.vietravel.Repository.TourRepository;
-import vietravel.example.vietravel.Service.TourPlanService;
+import vietravel.example.vietravel.Service.ServiceInterface.TourPlanService;
 import vietravel.example.vietravel.dto.TourPlanDto;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
