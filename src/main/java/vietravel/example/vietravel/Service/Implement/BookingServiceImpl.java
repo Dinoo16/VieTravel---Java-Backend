@@ -74,7 +74,7 @@ public class BookingServiceImpl implements BookingService {
 
 
         // 4. Lấy Tour từ tourId
-        Long tourId = bookingDto.getTourId(); // bạn cần thêm trường này vào BookingDto
+        Long tourId = bookingDto.getTourId();
         Tour tour = tourRepository.findById(tourId)
                 .orElseThrow(() -> new RuntimeException("Tour not found with id: " + tourId));
 
@@ -225,7 +225,7 @@ public class BookingServiceImpl implements BookingService {
         return bookings.stream()
                 .map(b -> b.getTourSchedule().getTour())
                 .distinct()
-                .map(this::toTourDto) // hoặc this::toTourDto nếu bạn viết convert trong service
+                .map(this::toTourDto)
                 .toList();
     }
 
