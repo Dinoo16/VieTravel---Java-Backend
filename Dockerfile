@@ -1,7 +1,13 @@
+
+
 # Stage build (dùng JDK 21)
 FROM eclipse-temurin:21-jdk-alpine as builder
 WORKDIR /app
 COPY . .
+
+# Give execute permission to mvnw
+RUN chmod +x mvnw
+
 RUN ./mvnw package -DskipTests
 
 # Stage run (chỉ cần JRE 21 nhẹ hơn)
