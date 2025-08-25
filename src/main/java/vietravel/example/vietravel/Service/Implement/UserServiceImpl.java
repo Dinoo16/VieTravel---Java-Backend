@@ -32,11 +32,14 @@ public class UserServiceImpl implements UserService {
         UserDto dto = new UserDto();
         dto.setId(user.getUserId());
         dto.setName(user.getName());
+        dto.setDateOfBirth(user.getDateOfBirth());
         dto.setEmail(user.getEmail());
-        dto.setPassword(user.getPassword());
+//        dto.setPassword(user.getPassword());
         dto.setRole(user.getRole());
         dto.setPhone(user.getPhone());
         dto.setAvatar(user.getAvatar());
+        dto.setAddress(user.getAddress());
+        dto.setBio(user.getBio());
         return dto;
     }
 
@@ -87,29 +90,17 @@ public class UserServiceImpl implements UserService {
         return toDto(saved);
     }
 
-
     @Override
-    public UserDto updateUserProfile(Long id, UserDto userDto) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        if (optionalUser.isEmpty()) {
-            throw new RuntimeException("User not found");
-        }
-        User user = optionalUser.get();
-        // Update fields based on profile data
-        user.setName(userDto.getName());
-        user.setPhone(userDto.getPhone());
-        user.setAvatar(userDto.getAvatar());
-        User updatedUser = userRepository.save(user);
-        return toDto(updatedUser);
-    }
-
-    @Override
-    public UserDto updateUserProfileWithAvatar(Long id, String name, String phone, MultipartFile avatarFile) {
+    public UserDto updateUserProfileWithAvatar(Long id, UserDto userDto, MultipartFile avatarFile) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (name != null) user.setName(name);
-        if (phone != null) user.setPhone(phone);
+        // Update fields
+        user.setName(userDto.getName());
+        user.setPhone(userDto.getPhone());
+        user.setDateOfBirth(userDto.getDateOfBirth());
+        user.setAddress(userDto.getAddress());
+        user.setBio(userDto.getBio());
 
         // Lưu file nếu có upload
         if (avatarFile != null && !avatarFile.isEmpty()) {

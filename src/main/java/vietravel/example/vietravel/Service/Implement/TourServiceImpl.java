@@ -1,6 +1,7 @@
 package vietravel.example.vietravel.Service.Implement;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import vietravel.example.vietravel.Model.*;
@@ -21,6 +22,8 @@ public class TourServiceImpl implements TourService {
     private final DestinationRepository destinationRepository;
     private final GuideRepository guideRepository;
     private final TourPlanRepository tourPlanRepository;
+    private final BookingRepository bookingRepository;
+
 
     private TourDto toDto(Tour tour) {
         TourDto dto = new TourDto();
@@ -143,12 +146,22 @@ public class TourServiceImpl implements TourService {
     }
 
 
-//    @Override
-//    public TourDto createTour(TourDto tourDto) {
-//        Tour tour = toEntity(tourDto);
-//        return toDto(tourRepository.save(tour));
-//
-//    }
+    @Override
+    public List<TourDto> getTrendingTours(int limit) {
+        List<Object[]> trending = bookingRepository.findTrendingTours();
+
+        return trending.stream()
+                .limit(limit)
+                .map(obj -> {
+                    Long tourId = (Long) obj[0]; // tourId ở cột đầu tiên
+                    return tourRepository.findById(tourId).orElse(null);
+                })
+                .filter(Objects::nonNull)
+                .map(this::toDto)
+                .toList();
+    }
+
+
 
     @Override
     public TourDto createTour(TourDto tourDto) {

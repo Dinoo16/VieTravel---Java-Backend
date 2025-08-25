@@ -6,6 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vietravel.example.vietravel.Service.ServiceInterface.UserService;
+import vietravel.example.vietravel.dto.CategoryDto;
 import vietravel.example.vietravel.dto.UserDto;
 
 @RestController
@@ -19,16 +20,15 @@ public class UserController {
 
     public record ErrorResponse(String message) {}
 
-    // Update user's profile (name, phone, avatar)
+    // Update user's profile include avatar
     @PutMapping(value = "/{id}", consumes = {"multipart/form-data"})
     public ResponseEntity<?> updateUserProfile(
             @PathVariable Long id,
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "phone", required = false) String phone,
+            @RequestPart("user") UserDto userDto,
             @RequestParam(value = "avatar", required = false) MultipartFile avatarFile
     ) {
         try {
-            UserDto updated = userService.updateUserProfileWithAvatar(id, name, phone, avatarFile);
+            UserDto updated = userService.updateUserProfileWithAvatar(id, userDto, avatarFile);
             return ResponseEntity.ok(updated);
         } catch (RuntimeException e) {
             return ResponseEntity

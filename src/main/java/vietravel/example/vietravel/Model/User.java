@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import vietravel.example.vietravel.Enum.UserRole;
 import vietravel.example.vietravel.dto.UserDto;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class User {
 
     private String address;
 
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
     private String bio;
 

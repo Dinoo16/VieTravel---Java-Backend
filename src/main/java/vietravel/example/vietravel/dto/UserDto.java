@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 import vietravel.example.vietravel.Enum.UserRole;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -29,7 +30,7 @@ public class UserDto {
 
     private String address;
 
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
     private String bio;
 

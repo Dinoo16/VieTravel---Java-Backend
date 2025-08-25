@@ -10,12 +10,10 @@ public interface UserService {
     UserDto createUser(UserDto dto, PasswordEncoder encoder);
 
     UserDto createGuideAccount(UserDto dto);
-    UserDto updateUserProfile(Long id, UserDto dto);
-//    UserDto changePassword(Long id, UserDto dto);
 
     void deleteUser(Long id);
     UserDto getUserById(Long id);
     List<UserDto> getAllUsers();
     UserDto getUserInfo(String email);
-    UserDto updateUserProfileWithAvatar(Long id, String name, String phone, MultipartFile avatar);
+    UserDto updateUserProfileWithAvatar(Long id, UserDto dto, MultipartFile avatar);
 }

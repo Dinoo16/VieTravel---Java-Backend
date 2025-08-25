@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vietravel.example.vietravel.Model.Tour;
 import vietravel.example.vietravel.Model.TourPlan;
+import vietravel.example.vietravel.Repository.BookingRepository;
 import vietravel.example.vietravel.Repository.TourPlanRepository;
 import vietravel.example.vietravel.Repository.TourRepository;
 import vietravel.example.vietravel.Service.ServiceInterface.TourPlanService;
@@ -11,6 +12,7 @@ import vietravel.example.vietravel.dto.TourPlanDto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,12 +24,15 @@ public class TourPlanServiceImpl implements TourPlanService {
     @Autowired
     private TourRepository tourRepository;
 
+
     @Override
     public List<TourPlanDto> getAllTourPlan() {
         return tourPlanRepository.findAll().stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
+
+
 
     @Override
     public List<TourPlanDto> createMultipleTourPlans(List<TourPlanDto> dtos) {

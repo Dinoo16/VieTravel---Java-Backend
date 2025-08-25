@@ -4,6 +4,7 @@ package vietravel.example.vietravel.Controller.PublicController;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vietravel.example.vietravel.Model.Tour;
 import vietravel.example.vietravel.Service.ServiceInterface.TourService;
 import vietravel.example.vietravel.dto.TourDto;
 
@@ -28,6 +29,15 @@ public class TourController {
     public ResponseEntity<TourDto> getTourById(@PathVariable Long id) {
         TourDto tour = tourService.getTourById(id);
         return ResponseEntity.ok(tour);
+    }
+
+    // Get trending tours
+    @GetMapping("/trending")
+    public ResponseEntity<List<TourDto>> getTrendingTours(
+            @RequestParam(defaultValue = "5") int limit) {
+
+        List<TourDto> trendingTours = tourService.getTrendingTours(limit);
+        return ResponseEntity.ok(trendingTours);
     }
 
     @GetMapping("/search")
