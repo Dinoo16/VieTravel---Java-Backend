@@ -67,12 +67,22 @@ public class SecurityConfig {
     // CORS Configuration
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+
+        CorsConfiguration apiConfig = new CorsConfiguration();
+        apiConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://127.0.0.1:3000", "https://dinoo16.github.io"));
+        apiConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        apiConfig.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
+        apiConfig.setAllowCredentials(true);
+        source.registerCorsConfiguration("/**", apiConfig);
+
+        CorsConfiguration uploadsConfig = new CorsConfiguration();
+        uploadsConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://127.0.0.1:3000", "https://dinoo16.github.io", "null"));
+        uploadsConfig.setAllowedMethods(Arrays.asList("GET"));
+        uploadsConfig.setAllowCredentials(true);
+        source.registerCorsConfiguration("/uploads/**", uploadsConfig);
+
         return source;
+
     }
 }
