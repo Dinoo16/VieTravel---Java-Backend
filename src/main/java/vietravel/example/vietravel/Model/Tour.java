@@ -1,7 +1,9 @@
 package vietravel.example.vietravel.Model;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,9 +27,6 @@ public class Tour {
 
     private String departure;
 
-    private LocalDateTime departureTime;
-
-    private LocalDateTime returnTime;
 
     // Category (many tours -> one category)
     @ManyToMany
@@ -67,8 +66,14 @@ public class Tour {
     // Available dates
     @ElementCollection
     @CollectionTable(name = "tour_available_dates", joinColumns = @JoinColumn(name = "tour_id"))
-    @Column(name = "available_date")
-    private List<LocalDateTime> availableDates;
+    private List<AvailableDate> availableDates = new ArrayList<>();
+
+    // Available times
+    @JsonFormat(pattern = "HH:mm")
+    @ElementCollection
+    @Column(name = "available_time")
+    @CollectionTable(name = "tour_available_times", joinColumns = @JoinColumn(name = "tour_id"))
+    private List<LocalTime> availableTimes;
 
     // Relationships
 

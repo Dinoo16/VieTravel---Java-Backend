@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import vietravel.example.vietravel.Model.Category;
-import vietravel.example.vietravel.Model.Destination;
-import vietravel.example.vietravel.Model.Region;
-import vietravel.example.vietravel.Model.Tour;
+import vietravel.example.vietravel.Model.*;
 import vietravel.example.vietravel.Repository.DestinationRepository;
 import vietravel.example.vietravel.Repository.RegionRepository;
 import vietravel.example.vietravel.Service.ServiceInterface.DestinationService;
@@ -144,8 +141,6 @@ public class DestinationServiceImpl implements DestinationService {
         dto.setTitle(tour.getTitle());
         dto.setDestinationName(tour.getDestination().getName());
         dto.setDeparture(tour.getDeparture());
-        dto.setDepartureTime(tour.getDepartureTime());
-        dto.setReturnTime(tour.getReturnTime());
         dto.setCategoryNames(tour.getCategories().stream().map(Category::getName).collect(Collectors.toList()));
         dto.setGuideName(tour.getGuide() != null ? tour.getGuide().getName() : null);
         dto.setDuration(tour.getDuration() + (tour.getDuration() == 1 ? " day" : " days"));
@@ -154,6 +149,14 @@ public class DestinationServiceImpl implements DestinationService {
         String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
         dto.setBackgroundImage(baseUrl + tour.getBackgroundImage());
         dto.setGallery(tour.getGallery());
+        dto.setAvailableDates(
+                tour.getAvailableDates() != null ?
+                        tour.getAvailableDates().stream()
+                                .filter(AvailableDate::isActive)
+                                .collect(Collectors.toList())
+                        : new ArrayList<>()
+        );
+        dto.setAvailableTimes(tour.getAvailableTimes());
         dto.setTourPlans(
                 tour.getTourPlans() != null ?
                         tour.getTourPlans().stream().map(plan -> {

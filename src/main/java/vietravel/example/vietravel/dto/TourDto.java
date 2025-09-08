@@ -2,7 +2,10 @@ package vietravel.example.vietravel.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import vietravel.example.vietravel.Model.AvailableDate;
+
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 @Data
 public class TourDto {
@@ -17,15 +20,8 @@ public class TourDto {
     @NotBlank(message = "Departure location is required")
     private String departure;
 
-    @NotNull(message = "Departure time is required")
-    private LocalDateTime departureTime;
-
-    @NotNull(message = "Return time is required")
-    private LocalDateTime returnTime;
-
     @NotEmpty(message = "Category is required")
     List<String> categoryNames;
-
 
     private String guideName;
 
@@ -47,5 +43,8 @@ public class TourDto {
 
     private List<ReviewDto> reviews;
 
-    private List<LocalDateTime> availableDates;
+    private List<AvailableDate> availableDates;
+
+    // new attribute availableTimes
+    private List<LocalTime> availableTimes;
 }

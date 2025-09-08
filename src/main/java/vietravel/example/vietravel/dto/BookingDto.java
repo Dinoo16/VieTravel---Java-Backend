@@ -7,6 +7,7 @@ import vietravel.example.vietravel.Model.TourSchedule;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
 public class BookingDto {
@@ -16,8 +17,11 @@ public class BookingDto {
 
     private Long userId;
 
-    @NotNull(message = "Booking date is required")
+    @NotNull(message = "Departure date is required")
     private LocalDate date;
+
+    @NotNull(message= "Departure time is required")
+    private LocalTime time;
 
     @NotNull(message = "Tour schedule ID is required")
     private Long tourScheduleId;
@@ -51,7 +55,7 @@ public class BookingDto {
 
     private String message;
 
-    private String paypalOrderId;  // mapping với order PayPal
+    private String paypalOrderId;
     private String paypalCaptureId;
 
     private LocalDateTime createdAt;

@@ -10,6 +10,7 @@ import vietravel.example.vietravel.Service.ServiceInterface.TourService;
 import vietravel.example.vietravel.dto.*;
 import vietravel.example.vietravel.util.TourSortUtil;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,8 +32,6 @@ public class TourServiceImpl implements TourService {
         dto.setTitle(tour.getTitle());
         dto.setDestinationName(tour.getDestination().getName());
         dto.setDeparture(tour.getDeparture());
-        dto.setDepartureTime(tour.getDepartureTime());
-        dto.setReturnTime(tour.getReturnTime());
         dto.setCategoryNames(tour.getCategories().stream().map(Category::getName).collect(Collectors.toList()));
         dto.setGuideName(tour.getGuide() != null ? tour.getGuide().getName() : null);
         dto.setDuration(tour.getDuration() + (tour.getDuration() == 1 ? " day" : " days"));
@@ -41,6 +40,14 @@ public class TourServiceImpl implements TourService {
         String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
         dto.setBackgroundImage(baseUrl + tour.getBackgroundImage());
         dto.setGallery(tour.getGallery());
+        dto.setAvailableDates(
+                tour.getAvailableDates() != null ?
+                        tour.getAvailableDates().stream()
+                                .filter(AvailableDate::isActive)
+                                .collect(Collectors.toList())
+                        : new ArrayList<>()
+        );
+        dto.setAvailableTimes(tour.getAvailableTimes());
         dto.setTourPlans(
                 tour.getTourPlans() != null ?
                         tour.getTourPlans().stream().map(plan -> {
@@ -117,21 +124,27 @@ public class TourServiceImpl implements TourService {
                 .collect(Collectors.toList())
                 : new ArrayList<>();
 
+
         // Build Tour
         Tour tour = Tour.builder()
                 .title(dto.getTitle())
                 .departure(dto.getDeparture())
-                .departureTime(dto.getDepartureTime())
-                .returnTime(dto.getReturnTime())
                 .duration(Integer.parseInt(dto.getDuration().replaceAll("\\D", "")))
                 .price(dto.getPrice())
                 .description(dto.getDescription())
                 .backgroundImage(dto.getBackgroundImage())
                 .gallery(dto.getGallery())
-                .availableDates(dto.getAvailableDates())
                 .destination(destination)
                 .categories(categories)
                 .guide(guide)
+                .availableDates(
+                        dto.getAvailableDates() != null && !dto.getAvailableDates().isEmpty()
+                                ? dto.getAvailableDates().stream()
+                                .map(d -> new AvailableDate(d.getDate(), true))
+                                .collect(Collectors.toList())
+                                : generateAvailableDates()
+                )
+                .availableTimes(dto.getAvailableTimes())
                 .tourPlans(new ArrayList<>()) // Temporary
 
                 .build();
@@ -143,6 +156,18 @@ public class TourServiceImpl implements TourService {
 
         return tour;
 
+    }
+
+    @Override
+    public List<AvailableDate> generateAvailableDates() {
+        List<AvailableDate> dates = new ArrayList<>();
+        LocalDateTime today = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
+
+        for (int i = 0; i < 30; i++) {
+            LocalDateTime date = today.plusDays(i);
+            dates.add(new AvailableDate(date, true));
+        }
+        return dates;
     }
 
 
@@ -167,6 +192,9 @@ public class TourServiceImpl implements TourService {
     public TourDto createTour(TourDto tourDto) {
         try {
             Tour tour = toEntity(tourDto);
+            if (tour.getAvailableDates() == null || tour.getAvailableDates().isEmpty()) {
+                tour.setAvailableDates(generateAvailableDates());
+            }
             Tour savedTour = tourRepository.save(tour);
             return toDto(savedTour);
         } catch (Exception e) {
@@ -237,14 +265,17 @@ public class TourServiceImpl implements TourService {
         // Cập nhật các trường
         tour.setTitle(tourDto.getTitle());
         tour.setDeparture(tourDto.getDeparture());
-        tour.setDepartureTime(tourDto.getDepartureTime());
-        tour.setReturnTime(tourDto.getReturnTime());
         tour.setDuration(Integer.parseInt(tourDto.getDuration().replaceAll("\\D", "")));
         tour.setPrice(tourDto.getPrice());
         tour.setDescription(tourDto.getDescription());
         tour.setBackgroundImage(tourDto.getBackgroundImage());
         tour.setGallery(tourDto.getGallery());
-        tour.setAvailableDates(tourDto.getAvailableDates());
+        tour.setAvailableDates(
+                tourDto.getAvailableDates() != null
+                        ? tourDto.getAvailableDates()
+                        : new ArrayList<>()
+        );
+        tour.setAvailableTimes(tourDto.getAvailableTimes());
         tour.setDestination(destination);
         tour.setCategories(categories);
         tour.setGuide(guide);
@@ -310,42 +341,6 @@ public class TourServiceImpl implements TourService {
                 .collect(Collectors.toList());
 
     }
-
-
-//    @Override
-//    public List<TourDto> getAllToursSorted(String sortBy) {
-//        List<Tour> tours = tourRepository.findAll();
-//
-//        switch (sortBy.toLowerCase()) {
-//            case "top":
-//                // Sắp xếp số lượng tourSchedules giảm dần
-//                tours.sort((t1, t2) -> Integer.compare(
-//                        t2.getTourSchedules() != null ? t2.getTourSchedules().size() : 0,
-//                        t1.getTourSchedules() != null ? t1.getTourSchedules().size() : 0
-//                ));
-//                break;
-//
-//            case "lowest":
-//                // Sắp xếp price tăng dần
-//                tours.sort((t1, t2) -> Double.compare(
-//                        t1.getPrice() != null ? t1.getPrice() : 0.0,
-//                        t2.getPrice() != null ? t2.getPrice() : 0.0
-//                ));
-//                break;
-//
-//            case "reviewed":
-//                // TODO: sẽ implement sau dựa trên review
-//                break;
-//
-//            default:
-//                throw new RuntimeException("Invalid sort field: " + sortBy);
-//        }
-//
-//        return tours.stream()
-//                .map(this::toDto)
-//                .collect(Collectors.toList());
-//    }
-
 
 
 }

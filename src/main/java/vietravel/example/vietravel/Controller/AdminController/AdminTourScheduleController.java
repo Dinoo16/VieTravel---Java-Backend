@@ -23,9 +23,10 @@ public class AdminTourScheduleController {
     public ResponseEntity<TourScheduleDto> createDynamicSchedule(@RequestBody TourScheduleDto dto) {
         TourScheduleDto result = tourScheduleService.createDynamicSchedule(
                 dto.getTourId(),
+                dto.getDepartureDate(),
                 dto.getDepartureTime(),
-                dto.getReturnTime(),
-                dto.getGuideIds()
+                dto.getGuideIds(),
+                dto.getBookingIds()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }

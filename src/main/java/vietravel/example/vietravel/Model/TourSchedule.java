@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -25,7 +26,11 @@ public class TourSchedule {
     // Ngày khởi hành
     private LocalDateTime departureDate;
 
+    // Giờ khởi hành
+    private LocalTime departureTime;
+
     private LocalDateTime returnTime;
+
 
     // Gán nhiều hướng dẫn viên cho tour này
     @ManyToMany

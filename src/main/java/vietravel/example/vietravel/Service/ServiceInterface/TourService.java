@@ -1,5 +1,6 @@
 package vietravel.example.vietravel.Service.ServiceInterface;
 
+import vietravel.example.vietravel.Model.AvailableDate;
 import vietravel.example.vietravel.Model.Tour;
 import vietravel.example.vietravel.dto.DestinationDto;
 import vietravel.example.vietravel.dto.TourDto;
@@ -8,6 +9,7 @@ import vietravel.example.vietravel.dto.TourPlanDto;
 import java.util.List;
 
 public interface TourService {
+    List<AvailableDate> generateAvailableDates();
 
     TourDto createTour(TourDto tourDto);
 

@@ -21,6 +21,7 @@ import vietravel.example.vietravel.dto.TourPlanDto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,6 +45,7 @@ public class BookingServiceImpl implements BookingService {
         dto.setContactEmail(booking.getContactEmail());
         dto.setContactPhone(booking.getContactPhone());
         dto.setDate(booking.getDate());
+        dto.setTime(booking.getTime());
         dto.setStatus(booking.getStatus());
         dto.setNumberOfPeople(booking.getNumberOfPeople());
         dto.setTotalAmount(booking.getTotalAmount());
@@ -53,7 +55,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto createBooking(BookingDto bookingDto) {
-        // 3. Lấy thông tin User từ SecurityContext
+        // 3. Get User Info from SecurityContext
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
         Long userId = userDetails.getId();
@@ -62,39 +64,44 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
 
-        // 1. Validate ngày khởi hành
+        // 1. Validate Departure Date
         if (bookingDto.getDate().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Departure date must be today or in the future");
         }
 
-        // 2. Validate số người
+
+        // 3. Validate num of people
         if (bookingDto.getNumberOfPeople() <= 0) {
             throw new IllegalArgumentException("Number of people must be greater than 0");
         }
 
 
-        // 4. Lấy Tour từ tourId
+        // 4. Get Tour from tourId
         Long tourId = bookingDto.getTourId();
         Tour tour = tourRepository.findById(tourId)
                 .orElseThrow(() -> new RuntimeException("Tour not found with id: " + tourId));
 
-        // 5. Tính ngày đi và ngày về
+        // 5. Calculate departure Date and Return Date
         LocalDateTime departureDateTime = bookingDto.getDate().atStartOfDay();
         LocalDateTime returnDateTime = departureDateTime.plusDays(tour.getDuration());
 
-        // 6. Tính totalAmout
+        // Departure Time
+        LocalTime departureTime = bookingDto.getTime();
+
+        // 6. Calculate totalAmount
         BigDecimal totalAmount = BigDecimal.valueOf(tour.getPrice() * bookingDto.getNumberOfPeople());
 
-        // 7. Tạo TourSchedule mới (tạm không có hướng dẫn viên)
+        // 7. Create new TourSchedule
         TourSchedule newSchedule = TourSchedule.builder()
                 .tour(tour)
                 .departureDate(departureDateTime)
+                .departureTime(departureTime)
                 .returnTime(returnDateTime)
-                .guides(List.of()) // có thể cập nhật sau
+                .guides(List.of()) // update guide later
                 .build();
         tourScheduleRepository.save(newSchedule);
 
-        // 8. Tạo Booking mới gắn với schedule này
+        // 8. Create new Booking with new tour schedule
         Booking booking = Booking.builder()
                 .user(user)
                 .tourSchedule(newSchedule)
@@ -235,8 +242,6 @@ public class BookingServiceImpl implements BookingService {
         dto.setTitle(tour.getTitle());
         dto.setDestinationName(tour.getDestination().getName());
         dto.setDeparture(tour.getDeparture());
-        dto.setDepartureTime(tour.getDepartureTime());
-        dto.setReturnTime(tour.getReturnTime());
         dto.setCategoryNames(tour.getCategories().stream().map(Category::getName).collect(Collectors.toList()));
         dto.setGuideName(tour.getGuide() != null ? tour.getGuide().getName() : null);
         dto.setDuration(tour.getDuration() + (tour.getDuration() == 1 ? " day" : " days"));
@@ -245,6 +250,14 @@ public class BookingServiceImpl implements BookingService {
         String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
         dto.setBackgroundImage(baseUrl + tour.getBackgroundImage());
         dto.setGallery(tour.getGallery());
+        dto.setAvailableDates(
+                tour.getAvailableDates() != null ?
+                        tour.getAvailableDates().stream()
+                                .filter(AvailableDate::isActive)
+                                .collect(Collectors.toList())
+                        : new ArrayList<>()
+        );
+        dto.setAvailableTimes(tour.getAvailableTimes());
         dto.setTourPlans(
                 tour.getTourPlans() != null ?
                         tour.getTourPlans().stream().map(plan -> {

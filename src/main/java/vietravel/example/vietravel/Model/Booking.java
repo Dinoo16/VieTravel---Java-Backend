@@ -7,6 +7,7 @@ import vietravel.example.vietravel.Enum.BookingStatus;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Data
@@ -36,8 +37,11 @@ public class Booking {
     private String contactEmail;
     private String contactPhone;
 
-    // Ngày khởi hành
+    // Departure Date
     private LocalDate date;
+
+    // Departure Time
+    private LocalTime time;
 
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
