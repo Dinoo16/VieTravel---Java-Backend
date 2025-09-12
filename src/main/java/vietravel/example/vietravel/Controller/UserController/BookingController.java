@@ -11,6 +11,7 @@ import vietravel.example.vietravel.dto.BookingDto;
 import vietravel.example.vietravel.dto.TourDto;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user/bookings")
@@ -24,10 +25,32 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<BookingDto> createBooking(@RequestBody BookingDto bookingDto) {
         BookingDto createdBooking = bookingService.createBooking(bookingDto);
-        System.out.println(">>> booking request: " + bookingDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBooking);
     }
+    @PostMapping("/{id}/pending")
+    public void savePendingOrder(@PathVariable Long id, @RequestParam String orderId) {
+        bookingService.savePendingOrder(id, orderId);
+    }
+    @PostMapping("/paid")
+    public void markPaid(@RequestBody Map<String, String> payload) {
+        String orderId = payload.get("orderId");
+        String captureId = payload.get("captureId");
+        bookingService.markPaid(orderId, captureId);
+    }
 
+
+    @PostMapping("/failed")
+    public void markFailed(@RequestParam String orderId) {
+        bookingService.markFailed(orderId);
+    }
+
+
+    // Update booking (contact fields)
+    @PutMapping("/{id}")
+    public ResponseEntity<BookingDto> updateBooking(@PathVariable Long id, @RequestBody BookingDto bookingDto) {
+        BookingDto updateBooking = bookingService.updateBookingContact(id, bookingDto);
+        return ResponseEntity.ok(updateBooking);
+    }
     // Cancel booking
     @PutMapping("/{id}/cancel")
     public ResponseEntity<BookingDto> cancelBooking(@PathVariable Long id) {

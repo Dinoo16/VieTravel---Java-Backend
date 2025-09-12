@@ -40,6 +40,7 @@ public class PaymentController {
             PaymentDto paymentdto = paymentService.capturePayment(bookingId, orderId);
             return ResponseEntity.ok(paymentdto);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Failed to capture payment: " + e.getMessage()));
         }

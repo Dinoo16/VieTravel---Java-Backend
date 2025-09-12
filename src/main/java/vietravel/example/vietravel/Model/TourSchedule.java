@@ -3,8 +3,10 @@ package vietravel.example.vietravel.Model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,12 +26,12 @@ public class TourSchedule {
     private Tour tour;
 
     // Ngày khởi hành
-    private LocalDateTime departureDate;
+    private LocalDate departureDate;
 
     // Giờ khởi hành
     private LocalTime departureTime;
 
-    private LocalDateTime returnTime;
+    private LocalDate returnTime;
 
 
     // Gán nhiều hướng dẫn viên cho tour này
@@ -42,6 +44,6 @@ public class TourSchedule {
     private List<Guide> guides;
 
     @OneToMany(mappedBy = "tourSchedule", cascade = CascadeType.ALL)
-    private List<Booking> bookings;
+    private List<Booking> bookings = new ArrayList<>();
 
 }

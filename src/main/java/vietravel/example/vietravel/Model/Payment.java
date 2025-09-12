@@ -23,14 +23,12 @@ public class Payment {
     @JoinColumn(name = "booking_id", referencedColumnName = "bookingId")
     private Booking booking;
 
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     private BigDecimal amount;
     private String currency;
-
 
     private String providerTransactionId;
 

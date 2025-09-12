@@ -2,6 +2,8 @@ package vietravel.example.vietravel.Model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import vietravel.example.vietravel.Enum.BookingStatus;
 
 import java.math.BigDecimal;
@@ -20,6 +22,9 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bookingId;
 
+    @Column(name = "tour_id", nullable = false)
+    private Long tourId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -30,7 +35,6 @@ public class Booking {
 
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Payment payment;
-
 
     // Contact information
     private String contactName;
@@ -57,7 +61,11 @@ public class Booking {
     private String paypalOrderId;  // mapping với order PayPal
     private String paypalCaptureId; // mapping với capture
 
+    @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 }
 

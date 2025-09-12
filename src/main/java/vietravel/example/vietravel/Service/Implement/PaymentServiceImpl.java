@@ -10,16 +10,23 @@ import vietravel.example.vietravel.Enum.BookingStatus;
 import vietravel.example.vietravel.Enum.PaymentStatus;
 import vietravel.example.vietravel.Model.Booking;
 import vietravel.example.vietravel.Model.Payment;
+import vietravel.example.vietravel.Model.Tour;
+import vietravel.example.vietravel.Model.TourSchedule;
 import vietravel.example.vietravel.Repository.BookingRepository;
 import vietravel.example.vietravel.Repository.PaymentRepository;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import vietravel.example.vietravel.Repository.TourRepository;
+import vietravel.example.vietravel.Repository.TourScheduleRepository;
 import vietravel.example.vietravel.Service.PayPalClient;
 import vietravel.example.vietravel.Service.ServiceInterface.PaymentService;
 import vietravel.example.vietravel.dto.PaymentDto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +36,8 @@ public class PaymentServiceImpl implements PaymentService {
     private final PayPalClient payPalClient;
     private final BookingRepository bookingRepository;
     private final PaymentRepository paymentRepository;
+    private final TourRepository tourRepository;
+    private final TourScheduleRepository tourScheduleRepository;
 
     private PaymentDto toDto(Payment payment) {
         PaymentDto dto = new PaymentDto();
@@ -75,18 +84,54 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentDto capturePayment(Long bookingId, String orderId) {
         JsonNode result = payPalClient.captureOrder(orderId);
+        System.out.println("PayPal Capture Response: " + result.toPrettyString());
+        // get captureID
+        String captureId = result.has("id") ? result.get("id").asText() : null;
 
-        // Tìm payment bằng orderId thay vì từ booking
+        // find payment by orderId
         Payment payment = paymentRepository.findByProviderTransactionId(orderId)
                 .orElseThrow(() -> new RuntimeException("Payment not found with orderId: " + orderId));
 
         Booking booking = payment.getBooking();
 
+        Tour tour = tourRepository.findById(booking.getTourId())
+                .orElseThrow(() -> new RuntimeException("Tour not found with id: " + booking.getTourId()));
+
+        LocalDate departureDate = booking.getDate();
+        LocalTime departureTime = booking.getTime();
+        LocalDate returnDateTime = departureDate.plusDays(tour.getDuration());
+
+        // Check if tourSchedule already exists
+        Optional<TourSchedule> existingSchedule = tourScheduleRepository.findByTourAndDepartureDateAndDepartureTime(
+                tour, departureDate, departureTime);
+
+        TourSchedule tourSchedule;
+        if (existingSchedule.isPresent()) {
+            // Use existing tourSchedule
+            tourSchedule = existingSchedule.get();
+            System.out.println("Using existing TourSchedule: " + tourSchedule.getId());
+        } else {
+            // Create new TourSchedule
+            tourSchedule = TourSchedule.builder()
+                    .tour(tour)
+                    .departureDate(departureDate)
+                    .departureTime(departureTime)
+                    .returnTime(returnDateTime)
+                    .guides(List.of())
+                    .build();
+            tourSchedule = tourScheduleRepository.save(tourSchedule);
+            System.out.println("Created new TourSchedule: " + tourSchedule.getId());
+        }
+        // Update payment
         payment.setStatus(PaymentStatus.PAID);
         payment.setUpdatedAt(LocalDateTime.now());
         paymentRepository.save(payment);
 
+        // Update booking
         booking.setStatus(BookingStatus.PAID);
+        booking.setPaypalOrderId(orderId);
+        booking.setPaypalCaptureId(captureId);
+        booking.setTourSchedule(tourSchedule);
         bookingRepository.save(booking);
 
         return toDto(payment);
@@ -116,7 +161,5 @@ public class PaymentServiceImpl implements PaymentService {
     public List<PaymentDto> getAllPayments() {
         return paymentRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
     }
-
-    //
 
 }

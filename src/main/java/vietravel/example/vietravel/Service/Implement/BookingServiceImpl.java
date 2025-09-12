@@ -1,5 +1,6 @@
 package vietravel.example.vietravel.Service.Implement;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -24,6 +25,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,9 +40,13 @@ public class BookingServiceImpl implements BookingService {
     private BookingDto toDto(Booking booking) {
         BookingDto dto = new BookingDto();
         dto.setId(booking.getBookingId());
+        dto.setTourId(booking.getTourId());
         dto.setUserId(booking.getUser().getUserId());
-        dto.setTourScheduleId(booking.getTourSchedule().getId());
-        dto.setTourId(booking.getTourSchedule().getTour().getTourId());
+        if (booking.getTourSchedule() != null) {
+            dto.setTourScheduleId(booking.getTourSchedule().getId());
+        } else {
+            dto.setTourScheduleId(null);
+        }
         dto.setContactName(booking.getContactName());
         dto.setContactEmail(booking.getContactEmail());
         dto.setContactPhone(booking.getContactPhone());
@@ -50,12 +56,16 @@ public class BookingServiceImpl implements BookingService {
         dto.setNumberOfPeople(booking.getNumberOfPeople());
         dto.setTotalAmount(booking.getTotalAmount());
         dto.setMessage(booking.getMessage());
+        dto.setPaypalOrderId(booking.getPaypalOrderId());
+        dto.setPaypalCaptureId(booking.getPaypalCaptureId());
+        dto.setCreatedAt(booking.getCreatedAt());
+        dto.setUpdatedAt(booking.getUpdatedAt());
         return dto;
     }
 
     @Override
     public BookingDto createBooking(BookingDto bookingDto) {
-        // 3. Get User Info from SecurityContext
+        // Get User Info from SecurityContext
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
         Long userId = userDetails.getId();
@@ -63,57 +73,39 @@ public class BookingServiceImpl implements BookingService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
-
-        // 1. Validate Departure Date
+        // Validate Departure Date
         if (bookingDto.getDate().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Departure date must be today or in the future");
         }
 
-
-        // 3. Validate num of people
+        // Validate num of people
         if (bookingDto.getNumberOfPeople() <= 0) {
             throw new IllegalArgumentException("Number of people must be greater than 0");
         }
 
-
-        // 4. Get Tour from tourId
+        // Get Tour from tourId
         Long tourId = bookingDto.getTourId();
         Tour tour = tourRepository.findById(tourId)
                 .orElseThrow(() -> new RuntimeException("Tour not found with id: " + tourId));
 
-        // 5. Calculate departure Date and Return Date
-        LocalDateTime departureDateTime = bookingDto.getDate().atStartOfDay();
-        LocalDateTime returnDateTime = departureDateTime.plusDays(tour.getDuration());
-
-        // Departure Time
-        LocalTime departureTime = bookingDto.getTime();
-
-        // 6. Calculate totalAmount
+        // Calculate totalAmount
         BigDecimal totalAmount = BigDecimal.valueOf(tour.getPrice() * bookingDto.getNumberOfPeople());
 
-        // 7. Create new TourSchedule
-        TourSchedule newSchedule = TourSchedule.builder()
-                .tour(tour)
-                .departureDate(departureDateTime)
-                .departureTime(departureTime)
-                .returnTime(returnDateTime)
-                .guides(List.of()) // update guide later
-                .build();
-        tourScheduleRepository.save(newSchedule);
 
-        // 8. Create new Booking with new tour schedule
+        // Create new Booking
         Booking booking = Booking.builder()
                 .user(user)
-                .tourSchedule(newSchedule)
-                .contactName(bookingDto.getContactName())
-                .contactEmail(bookingDto.getContactEmail())
-                .contactPhone(bookingDto.getContactPhone())
+                .tourId(bookingDto.getTourId())
+                .contactName(user.getName())
+                .contactEmail(user.getEmail())
+                .contactPhone(user.getPhone())
                 .date(bookingDto.getDate())
+                .time(bookingDto.getTime())
                 .status(BookingStatus.PENDING)
                 .numberOfPeople(bookingDto.getNumberOfPeople())
                 .currency(bookingDto.getCurrency())
                 .totalAmount(totalAmount)
-                .message(bookingDto.getMessage())
+//                .message(bookingDto.getMessage())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -124,25 +116,109 @@ public class BookingServiceImpl implements BookingService {
         return toDto(saved);
     }
 
-    // Lưu orderId khi tạo PayPal order
+    // Update booking
+    @Override
+    public BookingDto updateBookingContact(Long bookingId, BookingDto bookingDto) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentEmail = auth.getName();
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        // Get booking by role
+        Booking booking;
+        if (isAdmin) {
+            booking = bookingRepository.findById(bookingId)
+                    .orElseThrow(() -> new RuntimeException("Booking not found"));
+        } else {
+            booking = bookingRepository.findByBookingIdAndUser_Email(bookingId, currentEmail)
+                    .orElseThrow(() -> new AccessDeniedException("You are not allowed to update this booking"));
+        }
+
+        // Update contact fields
+        if (bookingDto.getContactName() != null) {
+            booking.setContactName(bookingDto.getContactName());
+        }
+        if (bookingDto.getContactEmail() != null) {
+            booking.setContactEmail(bookingDto.getContactEmail());
+        }
+        if (bookingDto.getContactPhone() != null) {
+            booking.setContactPhone(bookingDto.getContactPhone());
+        }
+        if (bookingDto.getMessage() != null) {
+            booking.setMessage(bookingDto.getMessage());
+        }
+
+        booking.setUpdatedAt(LocalDateTime.now());
+
+        Booking updated = bookingRepository.save(booking);
+        return toDto(updated);
+    }
+
+
+    // Save orderId when create PayPal order
     @Override
     public void savePendingOrder(Long bookingId, String orderId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
         booking.setPaypalOrderId(orderId);
+        booking.setStatus(BookingStatus.PENDING);
         booking.setUpdatedAt(LocalDateTime.now());
+
         bookingRepository.save(booking);
     }
 
-    // Cập nhật PAID khi capture thành công
+    // Update PAID when capture successful
+
     @Override
+    @Transactional
     public void markPaid(String orderId, String captureId) {
+
         Booking booking = bookingRepository.findByPaypalOrderId(orderId)
-                .orElseThrow(() -> new RuntimeException("Booking not found by orderId"));
+                .orElseThrow(() -> new RuntimeException("Booking not found by orderId: " + orderId));
+
+        System.out.println("markPaid called with orderId: " + orderId + ", captureId: " + captureId);
+        System.out.println("Booking found: " + booking.getBookingId() + ", status: " + booking.getStatus());
+
+        // Get tour by id from booking
+        Tour tour = tourRepository.findById(booking.getTourId())
+                .orElseThrow(() -> new RuntimeException("Tour not found with id: " + booking.getTourId()));
+
+        LocalDate departureDate = booking.getDate();
+        LocalTime departureTime = booking.getTime();
+        LocalDate returnDateTime = departureDate.plusDays(tour.getDuration());
+
+        // Check if tourSchedule already exists
+        Optional<TourSchedule> existingSchedule = tourScheduleRepository.findByTourAndDepartureDateAndDepartureTime(
+                tour, departureDate, departureTime);
+
+        TourSchedule tourSchedule;
+        if (existingSchedule.isPresent()) {
+            // Use existing tourSchedule
+            tourSchedule = existingSchedule.get();
+            System.out.println("Using existing TourSchedule: " + tourSchedule.getId());
+        } else {
+            // Create new TourSchedule
+            tourSchedule = TourSchedule.builder()
+                    .tour(tour)
+                    .departureDate(departureDate)
+                    .departureTime(departureTime)
+                    .returnTime(returnDateTime)
+                    .guides(List.of())
+                    .build();
+            tourSchedule = tourScheduleRepository.save(tourSchedule);
+            System.out.println("Created new TourSchedule: " + tourSchedule.getId());
+        }
+
+        // Update booking
         booking.setStatus(BookingStatus.PAID);
         booking.setPaypalCaptureId(captureId);
+        booking.setPaypalOrderId(orderId);
         booking.setUpdatedAt(LocalDateTime.now());
-        bookingRepository.save(booking);
+        booking.setTourSchedule(tourSchedule);
+
+        Booking savedBooking = bookingRepository.save(booking);
+        System.out.println("Booking saved with TourSchedule ID: " +
+                (savedBooking.getTourSchedule() != null ? savedBooking.getTourSchedule().getId() : "null"));
     }
 
     // Cập nhật FAILED
