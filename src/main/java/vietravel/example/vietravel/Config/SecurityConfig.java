@@ -1,6 +1,7 @@
 package vietravel.example.vietravel.Config;
 // Add this class to your project
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -65,19 +66,23 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
     // CORS Configuration
+
+
+    @Value("${frontend.url}")
+    private String frontendUrl;
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         CorsConfiguration apiConfig = new CorsConfiguration();
-        apiConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://127.0.0.1:3000", "https://dinoo16.github.io"));
+        apiConfig.setAllowedOrigins(Arrays.asList(frontendUrl, "http://127.0.0.1:3000", "https://dinoo16.github.io"));
         apiConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         apiConfig.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
         apiConfig.setAllowCredentials(true);
         source.registerCorsConfiguration("/**", apiConfig);
 
         CorsConfiguration uploadsConfig = new CorsConfiguration();
-        uploadsConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://127.0.0.1:3000", "https://dinoo16.github.io", "null"));
+        uploadsConfig.setAllowedOrigins(Arrays.asList(frontendUrl, "http://127.0.0.1:3000", "https://dinoo16.github.io", "null"));
         uploadsConfig.setAllowedMethods(Arrays.asList("GET"));
         uploadsConfig.setAllowCredentials(true);
         source.registerCorsConfiguration("/uploads/**", uploadsConfig);

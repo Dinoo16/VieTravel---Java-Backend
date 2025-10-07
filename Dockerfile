@@ -1,18 +1,27 @@
-
-
-# Stage build (dùng JDK 21)
-FROM eclipse-temurin:21-jdk-alpine as builder
+# Use an official Maven image to build the Spring Boot app
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
+# Set the working directory
 WORKDIR /app
-COPY . .
 
-# Give execute permission to mvnw
-RUN chmod +x mvnw
+# Copy the pom.xml and install dependencies
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
-RUN ./mvnw package -DskipTests
+# Copy the source code and build the application
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Stage run (chỉ cần JRE 21 nhẹ hơn)
-FROM eclipse-temurin:21-jre-alpine
+# Use an official OpenJDK image to run the application
+FROM eclipse-temurin:21-jdk
+
+# Set the working directory
 WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar
+
+# Copy the built JAR file from the build stage
+COPY --from=builder /app/target/vietravel-0.0.1-SNAPSHOT.jar .
+
+# Expose port 8080
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","app.jar"]
+
+# Specify the command to run the application
+ENTRYPOINT ["java","-jar","vietravel-0.0.1-SNAPSHOT.jar"]

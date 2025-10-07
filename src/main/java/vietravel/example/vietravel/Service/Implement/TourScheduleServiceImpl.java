@@ -2,6 +2,7 @@ package vietravel.example.vietravel.Service.Implement;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import vietravel.example.vietravel.Enum.BookingStatus;
 import vietravel.example.vietravel.Model.Booking;
 import vietravel.example.vietravel.Model.Guide;
@@ -155,7 +156,8 @@ public class TourScheduleServiceImpl implements TourScheduleService {
         dto.setReturnTime(schedule.getReturnTime());
 
         dto.setTitle(tour.getTitle());
-        dto.setBackgroundImage(tour.getBackgroundImage());
+        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
+        dto.setBackgroundImage(baseUrl + tour.getBackgroundImage());
         dto.setDestinationName(tour.getDestination().getName());
         dto.setDuration(tour.getDuration());
 
