@@ -21,7 +21,6 @@ public class Category {
     @Column(nullable = false)
     private String name;
 
-    @Lob
     private String description;
 
     private String image;

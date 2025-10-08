@@ -1,6 +1,8 @@
 package vietravel.example.vietravel.Controller.AdminController;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,9 @@ import vietravel.example.vietravel.Model.ImageFile;
 import vietravel.example.vietravel.Service.ImageFileService;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -29,15 +34,21 @@ public class AdminUploadController {
     }
 
     // Get image by id
-    @GetMapping("/{id}")
-    public ResponseEntity<byte[]> getImage(@PathVariable Long id) {
-        return imageFileService.getImage(id)
-                .map(image -> ResponseEntity.ok()
-                        .contentType(MediaType.parseMediaType(image.getContentType()))
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + image.getFileName() + "\"")
-                        .body(image.getData()))
-                .orElse(ResponseEntity.notFound().build());
+    @GetMapping("/{fileName:.+}")
+    public ResponseEntity<Resource> getImage(@PathVariable String fileName) throws MalformedURLException {
+        Path filePath = Paths.get("uploads").resolve(fileName).normalize();
+        Resource resource = new UrlResource(filePath.toUri());
+
+        if (!resource.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG) // hoặc detect theo fileName nếu muốn
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
+
 
     // Get all images metadata (no binary data)
     @GetMapping({"", "/"})

@@ -27,7 +27,6 @@ public class Tour {
 
     private String departure;
 
-
     // Category (many tours -> one category)
     @ManyToMany
     @JoinTable(
@@ -51,7 +50,6 @@ public class Tour {
     private String description;
 
     // Fix later
-    @Column(columnDefinition = "TEXT")
     private String backgroundImage;
 
     // Gallery: list of image URLs

@@ -100,8 +100,6 @@ public class TourServiceImpl implements TourService {
             guide = guideRepository.findByName(dto.getGuideName())
                     .orElseThrow(() -> new RuntimeException("Guide not found"));
         }
-//        Guide guide = guideRepository.findByName(dto.getGuideName())
-//                .orElseThrow(() -> new RuntimeException("Guide not found"));
 
         // Check if day is exists or not
         Set<Integer> days = new HashSet<>();
@@ -187,7 +185,7 @@ public class TourServiceImpl implements TourService {
     }
 
 
-
+    @Transactional
     @Override
     public TourDto createTour(TourDto tourDto) {
         try {
@@ -195,6 +193,11 @@ public class TourServiceImpl implements TourService {
             if (tour.getAvailableDates() == null || tour.getAvailableDates().isEmpty()) {
                 tour.setAvailableDates(generateAvailableDates());
             }
+            // Debug log
+            System.out.println("Tour entity created, saving...");
+            System.out.println("Background image: " + tour.getBackgroundImage());
+            System.out.println("Gallery size: " + (tour.getGallery() != null ? tour.getGallery().size() : 0));
+
             Tour savedTour = tourRepository.save(tour);
             return toDto(savedTour);
         } catch (Exception e) {

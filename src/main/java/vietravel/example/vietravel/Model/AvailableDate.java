@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AvailableDate {
+public class AvailableDate  {
     private LocalDateTime date;
     private boolean active = true;
 }

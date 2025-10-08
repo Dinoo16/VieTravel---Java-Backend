@@ -17,6 +17,7 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
 //    List<Tour> findByNameContainingIgnoreCase(String keyword);
     List<Tour> findAll(Sort sort);
 
+
     @Query("SELECT t FROM Tour t " +
             "WHERE (:destination IS NULL OR t.destination.name LIKE %:destination%) " +
             "AND (:days IS NULL OR t.duration = :days)" +

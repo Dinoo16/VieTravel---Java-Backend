@@ -2,6 +2,9 @@ package vietravel.example.vietravel.Model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLDialect;
+import org.hibernate.type.descriptor.jdbc.BinaryJdbcType;
 
 @Entity
 @Table(name = "images")
@@ -22,7 +25,5 @@ public class ImageFile {
 
     private String contentType;
 
-    @Lob
-    @Column(columnDefinition = "LONGBLOB")
-    private byte[] data;
+    private String url;
 }
