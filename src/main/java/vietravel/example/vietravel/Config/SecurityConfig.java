@@ -68,21 +68,19 @@ public class SecurityConfig {
     // CORS Configuration
 
 
-    @Value("${frontend.url}")
-    private String frontendUrl;
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         CorsConfiguration apiConfig = new CorsConfiguration();
-        apiConfig.setAllowedOrigins(Arrays.asList(frontendUrl, "http://127.0.0.1:3000", "https://dinoo16.github.io"));
+        apiConfig.setAllowedOrigins(Arrays.asList("https://classy-tapioca-62f44c.netlify.app"));
         apiConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         apiConfig.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
         apiConfig.setAllowCredentials(true);
         source.registerCorsConfiguration("/**", apiConfig);
 
         CorsConfiguration uploadsConfig = new CorsConfiguration();
-        uploadsConfig.setAllowedOrigins(Arrays.asList(frontendUrl, "http://127.0.0.1:3000", "https://dinoo16.github.io", "null"));
+        uploadsConfig.setAllowedOrigins(Arrays.asList("https://classy-tapioca-62f44c.netlify.app"));
         uploadsConfig.setAllowedMethods(Arrays.asList("GET"));
         uploadsConfig.setAllowCredentials(true);
         source.registerCorsConfiguration("/uploads/**", uploadsConfig);
