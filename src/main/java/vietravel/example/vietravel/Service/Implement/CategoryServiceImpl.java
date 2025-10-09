@@ -100,8 +100,7 @@ public class CategoryServiceImpl implements CategoryService {
         dto.setId(category.getCategoryId());
         dto.setName(category.getName());
         dto.setDescription(category.getDescription());
-        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
-        dto.setImage(baseUrl + category.getImage());
+        dto.setImage(category.getImage());
         return dto;
     }
 
@@ -129,8 +128,7 @@ public class CategoryServiceImpl implements CategoryService {
         dto.setDuration(tour.getDuration() + (tour.getDuration() == 1 ? " day" : " days"));
         dto.setPrice(tour.getPrice());
         dto.setDescription(tour.getDescription());
-        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
-        dto.setBackgroundImage(baseUrl + tour.getBackgroundImage());
+        dto.setBackgroundImage(tour.getBackgroundImage());
         dto.setGallery(tour.getGallery());
         dto.setAvailableDates(
                 tour.getAvailableDates() != null ?

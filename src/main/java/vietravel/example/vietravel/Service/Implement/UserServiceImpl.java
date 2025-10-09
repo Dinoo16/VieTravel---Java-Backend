@@ -9,6 +9,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import vietravel.example.vietravel.Enum.UserRole;
 import vietravel.example.vietravel.Model.User;
 import vietravel.example.vietravel.Repository.UserRepository;
+import vietravel.example.vietravel.Service.CloudinaryService;
 import vietravel.example.vietravel.Service.ServiceInterface.UserService;
 import vietravel.example.vietravel.dto.UserDto;
 
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final CloudinaryService cloudinaryService;
 
     private UserDto toDto(User user) {
         UserDto dto = new UserDto();
@@ -102,20 +104,12 @@ public class UserServiceImpl implements UserService {
         user.setAddress(userDto.getAddress());
         user.setBio(userDto.getBio());
 
-        // Lưu file nếu có upload
         if (avatarFile != null && !avatarFile.isEmpty()) {
             try {
-                String uploadDir = "uploads/avatars/";
-                Files.createDirectories(Paths.get(uploadDir));
-
-                String fileName = UUID.randomUUID() + "_" + avatarFile.getOriginalFilename();
-                Path filePath = Paths.get(uploadDir + fileName);
-                Files.write(filePath, avatarFile.getBytes());
-                String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
-                // Lưu đường dẫn vào DB (hoặc chỉ tên file)
-                user.setAvatar(baseUrl + "/uploads/avatars/" + fileName);
+                String imageUrl = cloudinaryService.uploadFile(avatarFile);
+                user.setAvatar(imageUrl);
             } catch (IOException e) {
-                throw new RuntimeException("Failed to save avatar", e);
+                throw new RuntimeException("Failed to upload avatar to Cloudinary", e);
             }
         }
 

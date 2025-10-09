@@ -37,8 +37,7 @@ public class TourServiceImpl implements TourService {
         dto.setDuration(tour.getDuration() + (tour.getDuration() == 1 ? " day" : " days"));
         dto.setPrice(tour.getPrice());
         dto.setDescription(tour.getDescription());
-        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
-        dto.setBackgroundImage(baseUrl + tour.getBackgroundImage());
+        dto.setBackgroundImage(tour.getBackgroundImage());
         dto.setGallery(tour.getGallery());
         dto.setAvailableDates(
                 tour.getAvailableDates() != null ?

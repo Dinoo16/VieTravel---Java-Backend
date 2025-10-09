@@ -156,8 +156,7 @@ public class TourScheduleServiceImpl implements TourScheduleService {
         dto.setReturnTime(schedule.getReturnTime());
 
         dto.setTitle(tour.getTitle());
-        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
-        dto.setBackgroundImage(baseUrl + tour.getBackgroundImage());
+        dto.setBackgroundImage(tour.getBackgroundImage());
         dto.setDestinationName(tour.getDestination().getName());
         dto.setDuration(tour.getDuration());
 

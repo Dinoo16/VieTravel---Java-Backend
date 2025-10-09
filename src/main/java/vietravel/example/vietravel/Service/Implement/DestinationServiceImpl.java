@@ -30,12 +30,11 @@ public class DestinationServiceImpl implements DestinationService {
     private DestinationDto toDto(Destination destination) {
         List<Long> tourIds = destination.getTours() != null ?
                 destination.getTours().stream().map(Tour::getTourId).toList() : null;
-        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
         return DestinationDto.builder()
                 .id(destination.getDestinationId())
                 .name(destination.getName())
                 .description(destination.getDescription())
-                .backgroundImage(baseUrl + destination.getBackgroundImage())
+                .backgroundImage(destination.getBackgroundImage())
                 .regionId(destination.getRegion().getRegionId())
                 .tourIds(tourIds)
                 .build();
@@ -146,8 +145,7 @@ public class DestinationServiceImpl implements DestinationService {
         dto.setDuration(tour.getDuration() + (tour.getDuration() == 1 ? " day" : " days"));
         dto.setPrice(tour.getPrice());
         dto.setDescription(tour.getDescription());
-        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().toUriString();
-        dto.setBackgroundImage(baseUrl + tour.getBackgroundImage());
+        dto.setBackgroundImage(tour.getBackgroundImage());
         dto.setGallery(tour.getGallery());
         dto.setAvailableDates(
                 tour.getAvailableDates() != null ?
