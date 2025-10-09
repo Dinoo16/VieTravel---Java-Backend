@@ -1,18 +1,16 @@
 package vietravel.example.vietravel.Service;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import vietravel.example.vietravel.Model.ImageFile;
 import vietravel.example.vietravel.Repository.ImageFileRepository;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -20,31 +18,19 @@ import java.util.Optional;
 public class ImageFileService {
 
     private final ImageFileRepository imageFileRepository;
-
-    private static final String UPLOAD_DIR = "uploads/";
+    private final Cloudinary cloudinary;
 
     public String uploadImage(MultipartFile file, String description) throws IOException {
-        // 1️⃣ Tạo thư mục nếu chưa tồn tại
-        File uploadDir = new File(UPLOAD_DIR);
-        if (!uploadDir.exists()) {
-            uploadDir.mkdirs();
-        }
+        // 1️⃣ Upload file lên Cloudinary
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
+                ObjectUtils.asMap("folder", "vietravel_uploads")); // optional: folder name
 
-        // 2️⃣ Tạo file vật lý
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        Path filePath = Paths.get(UPLOAD_DIR + fileName);
-        Files.write(filePath, file.getBytes());
+        // Lấy URL từ kết quả
+        String imageUrl = (String) uploadResult.get("secure_url");
 
-        // 3️⃣ Tạo URL công khai cho file
-        String imageUrl = ServletUriComponentsBuilder
-                .fromCurrentContextPath()
-                .path("/uploads/")
-                .path(fileName)
-                .toUriString();
-
-        // 4️⃣ Lưu thông tin ảnh vào DB
+        // Lưu thông tin ảnh vào DB
         ImageFile imageFile = ImageFile.builder()
-                .fileName(fileName)
+                .fileName((String) uploadResult.get("original_filename"))
                 .url(imageUrl)
                 .description(description != null ? description : "")
                 .contentType(file.getContentType())
@@ -67,17 +53,22 @@ public class ImageFileService {
         Optional<ImageFile> imageOpt = imageFileRepository.findById(id);
         if (imageOpt.isPresent()) {
             ImageFile image = imageOpt.get();
-            // Xóa file vật lý
             try {
-                Path filePath = Paths.get(UPLOAD_DIR + image.getFileName());
-                Files.deleteIfExists(filePath);
-            } catch (IOException e) {
-                System.err.println("Could not delete file: " + e.getMessage());
+                // Xóa trên Cloudinary (optional)
+                String publicId = extractPublicId(image.getUrl());
+                cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+            } catch (Exception e) {
+                System.err.println("Could not delete from Cloudinary: " + e.getMessage());
             }
-            // Xóa bản ghi DB
             imageFileRepository.deleteById(id);
             return true;
         }
         return false;
+    }
+
+    private String extractPublicId(String url) {
+        String[] parts = url.split("/");
+        String filename = parts[parts.length - 1];
+        return "vietravel_uploads/" + filename.substring(0, filename.lastIndexOf('.'));
     }
 }
