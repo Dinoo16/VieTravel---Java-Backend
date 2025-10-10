@@ -73,14 +73,14 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         CorsConfiguration apiConfig = new CorsConfiguration();
-        apiConfig.setAllowedOrigins(Arrays.asList("https://vietravelapplication.netlify.app"));
+        apiConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://vietravelapplication.netlify.app"));
         apiConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         apiConfig.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
         apiConfig.setAllowCredentials(true);
         source.registerCorsConfiguration("/**", apiConfig);
 
         CorsConfiguration uploadsConfig = new CorsConfiguration();
-        uploadsConfig.setAllowedOrigins(Arrays.asList("https://vietravelapplication.netlify.app"));
+        uploadsConfig.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://vietravelapplication.netlify.app"));
         uploadsConfig.setAllowedMethods(Arrays.asList("GET"));
         uploadsConfig.setAllowCredentials(true);
         source.registerCorsConfiguration("/uploads/**", uploadsConfig);
